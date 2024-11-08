@@ -12,6 +12,7 @@ import {
 import app from '../firebase-config/firebasecofing';
 import { getFirestore, collection, addDoc } from 'firebase/firestore';
 import { useNavigation } from "@react-navigation/native";
+import  Icon  from "react-native-vector-icons/Ionicons";
 
 export default function NewClient() {
 
@@ -19,16 +20,26 @@ export default function NewClient() {
     const navigation = useNavigation();
     const [cidade, setCidade] = useState('');
     const [nomeFantasia, setNomeFantasia] = useState('');
-    const [atendeMoto, setAtendeMoto] = useState(false);
-    const [atendeCarro, setAtendeCarro] = useState(false);
-    const [eh24Horas, setEh24Horas] = useState(false);
+    const [atendeMoto, setAtendeMoto] = useState(null);
+    const [atendeCarro, setAtendeCarro] = useState(null);
+    const [eh24Horas, setEh24Horas] = useState(null);
     const [responsavel, setResponsavel] = useState('');
     const [cpfResponsavel, setCpfResponsavel] = useState('');
-    const [categorias, setCategorias] = useState('');
+    const [categorias, setCategorias] = useState([]);
     const [endereco, setEndereco] = useState('');
     const db = getFirestore(app);
 
-
+    const categoriasPredefinidas = ["Elétrica", "Mecânica", "Lanternagem", "Guincho", "Borracharia", "Pintura", "Revisão"];
+    
+    // 4. Função para alternar a seleção de categoria
+    const toggleCategoria = (categoria) => {
+        setCategorias(prevCategorias =>
+            prevCategorias.includes(categoria)
+                ? prevCategorias.filter(cat => cat !== categoria)
+                : [...prevCategorias, categoria]
+        );
+    };
+    
     // Função para enviar dados ao Firestore
     const handleNewClient = async () => {
         try {
@@ -41,7 +52,7 @@ export default function NewClient() {
                 eh24Horas: eh24Horas,
                 responsavel: responsavel,
                 cpfResponsavel: cpfResponsavel,
-                categorias: categorias.split(',').map(categoria => categoria.trim()),
+                categorias: categorias,
                 endereco: endereco,
             });
 
@@ -49,12 +60,12 @@ export default function NewClient() {
             // Limpa os campos após o cadastro
             setCidade('');
             setNomeFantasia('');
-            setAtendeMoto(false);
-            setAtendeCarro(false);
-            setEh24Horas(false);
+            setAtendeMoto(null);
+            setAtendeCarro(null);
+            setEh24Horas(null);
             setResponsavel('');
             setCpfResponsavel('');
-            setCategorias('');
+            setCategorias([]);
             setEndereco('');
         } catch (error) {
             console.error("Erro ao cadastrar mecânica:", error);
@@ -83,20 +94,44 @@ export default function NewClient() {
                     placeholder="Nome da mecânica"
                 />
 
-                <Text style={styles.label}>Atende Moto?</Text>
-                <TouchableOpacity onPress={() => setAtendeMoto(!atendeMoto)} style={styles.checkbox}>
-                    <Text>{atendeMoto ? "Sim" : "Não"}</Text>
-                </TouchableOpacity>
+<Text style={styles.label}>Atende Moto?</Text>
+                <View style={styles.checkboxContainer}>
+                    <TouchableOpacity onPress={() => setAtendeMoto(true)} style={styles.checkboxOption}>
+                        <Icon name={atendeMoto === true ? "checkbox" : "square-outline"} size={24} color="#007bff" />
+                        <Text>Sim</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => setAtendeMoto(false)} style={styles.checkboxOption}>
+                        <Icon name={atendeMoto === false ? "checkbox" : "square-outline"} size={24} color="#007bff" />
+                        <Text>Não</Text>
+                    </TouchableOpacity>
+                </View>
 
                 <Text style={styles.label}>Atende Carro?</Text>
-                <TouchableOpacity onPress={() => setAtendeCarro(!atendeCarro)} style={styles.checkbox}>
-                    <Text>{atendeCarro ? "Sim" : "Não"}</Text>
-                </TouchableOpacity>
+                <View style={styles.checkboxContainer}>
+                    <TouchableOpacity onPress={() => setAtendeCarro(true)} style={styles.checkboxOption}>
+                        <Icon name={atendeCarro === true ? "checkbox" : "square-outline"} size={24} color="#007bff" />
+                        <Text>Sim</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => setAtendeCarro(false)} style={styles.checkboxOption}>
+                        <Icon name={atendeCarro === false ? "checkbox" : "square-outline"} size={24} color="#007bff" />
+                        <Text>Não</Text>
+                    </TouchableOpacity>
+                </View>
+
 
                 <Text style={styles.label}>24 Horas?</Text>
-                <TouchableOpacity onPress={() => setEh24Horas(!eh24Horas)} style={styles.checkbox}>
-                    <Text>{eh24Horas ? "Sim" : "Não"}</Text>
-                </TouchableOpacity>
+
+                <View style={styles.checkboxContainer}>
+                    <TouchableOpacity onPress={() => setEh24Horas(true)} style={styles.checkboxOption}>
+                        <Icon name={eh24Horas === true ? "checkbox" : "square-outline"} size={24} color="#007bff" />
+                        <Text>Sim</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => setEh24Horas(false)} style={styles.checkboxOption}>
+                        <Icon name={eh24Horas === false ? "checkbox" : "square-outline"} size={24} color="#007bff" />
+                        <Text>Não</Text>
+                    </TouchableOpacity>
+                </View>
+                
 
                 <Text style={styles.label}>Nome do Responsável</Text>
                 <TextInput
@@ -114,13 +149,20 @@ export default function NewClient() {
                     placeholder="CPF do responsável"
                 />
 
+                {/* 7. Checkboxes para Categorias */}
                 <Text style={styles.label}>Categorias</Text>
-                <TextInput
-                    style={styles.input}
-                    value={categorias}
-                    onChangeText={setCategorias}
-                    placeholder="Ex: Elétrica, Mecânica, Guincho"
-                />
+                {categoriasPredefinidas.map((categoria, index) => (
+                    <TouchableOpacity
+                        key={index}
+                        onPress={() => toggleCategoria(categoria)}
+                        style={[
+                            styles.checkboxOption,
+                            categorias.includes(categoria) && styles.checkboxSelected
+                        ]}
+                    >
+                        <Text>{categoria}</Text>
+                    </TouchableOpacity>
+                ))}
 
                 <Text style={styles.label}>Endereço</Text>
                 <TextInput

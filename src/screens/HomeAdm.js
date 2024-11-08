@@ -42,7 +42,7 @@ export default function HomeAdm() {
             <Text>
                 {user ? `Olá, ${user.displayName || userData?.nome || 'Usuário'}` : 'Você não está logado'}
             </Text>
-            <TouchableOpacity></TouchableOpacity>
+            
             <TouchableOpacity style={styles.btnNewClient} onPress={()=> navigation.navigate('NewClient')}>
                 <Text style={styles.buttonText}>Cadastrar Novo Cliente</Text>
             </TouchableOpacity>
