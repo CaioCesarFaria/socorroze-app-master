@@ -21,33 +21,15 @@ import Home from './src/screens/Home';
 const Tab = createBottomTabNavigator();
 
 export default function App() {
+  const Stack = createStackNavigator();
   return (
     <NavigationContainer>
-      <Tab.Navigator initialRouteName='Welcome'
-      screenOptions={({ route }) => ({
-        tabBarIcon: ({ focused, color, size }) => {
-          let iconName;
-
-          if (route.name === 'Home') {
-            iconName = focused ? 'home' : 'home-outline';
-          } 
-          else if (route.name === 'Welcome') {
-            iconName = focused ? 'settings' : 'settings-outline';
-          }
-          else if (route.name==="Cadastro") {
-            iconName = focused ? 'cart' : 'cart-outline';
-          }
-          // You can return any component that you like here!
-          return <Ionicons name={iconName} size={size} color={color} />;
-        },
-        tabBarActiveTintColor: 'tomato',
-        tabBarInactiveTintColor: 'gray',
-      })}>
-        <Tab.Screen name='Home' component={Home}/>
-        <Tab.Screen name='Welcome' component={Welcome} />
-        <Tab.Screen name='Cadastro' component={Cadastro} />
-        <Tab.Screen name='Login' component={Login} />
-      </Tab.Navigator>
+      <Stack.Navigator>
+        <Stack.Screen name='Welcome' options={{headerShown:false}} component={Welcome}/>
+        <Stack.Screen name='Home' component={Home}/>
+        <Stack.Screen name='Cadastro' component={Cadastro} />
+        <Stack.Screen name='Login' component={Login} />
+      </Stack.Navigator>
     </NavigationContainer>
   );
 }
