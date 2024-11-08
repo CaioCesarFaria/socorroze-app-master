@@ -19,12 +19,17 @@ export default function Login() {
     try {
       // Tenta fazer o login com e-mail e senha
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;  // Objeto do usuário autenticado
+      const isAdmin = userCredential.user.uid === "9izwMEqZtJcvkS0tCyGuF7xAC8t1"; // CRIANDO A CHAVE DE ADM 
+      if (isAdmin) {
+        navigation.navigate('HomeAdm', { isAdmin });
+        Alert.alert("Bem-vindo Administrador");
+      } else {
+        const user = userCredential.user;  // Objeto do usuário autenticado
 
-      // Se o login for bem-sucedido, navega para a tela "Home"
-      console.log('Usuário autenticado:', user);
-      navigation.replace('Home');  // Navegação para a tela Home
-
+        // Se o login for bem-sucedido, navega para a tela "Home"
+        console.log('Usuário autenticado:', user);
+        navigation.replace('Home');  // Navegação para a tela Home
+      }
     } catch (error) {
       const errorCode = error.code;
       const errorMessage = error.message;

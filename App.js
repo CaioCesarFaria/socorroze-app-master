@@ -14,6 +14,8 @@ import Welcome from './src/screens/Welcome';
 import Login from './src/screens/Login';
 import Cadastro from './src/screens/Cadastro';
 import Home from './src/screens/Home';
+import HomeAdm from './src/screens/HomeAdm';
+import NewClient from './src/screens/NewClient';
 
 
 
@@ -29,6 +31,8 @@ export default function App() {
         <Stack.Screen name='Home' component={Home}/>
         <Stack.Screen name='Cadastro' component={Cadastro} />
         <Stack.Screen name='Login' component={Login} />
+        <Stack.Screen name= 'HomeAdm' component={HomeAdm}/>
+        <Stack.Screen name='NewClient' component={NewClient}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

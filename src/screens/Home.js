@@ -7,7 +7,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 export default function App() {
   const [user, setUser] = useState(null);
   const [userData, setUserData] = useState(null);
-
+  
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, async (userAuth) => {
       if (userAuth) {
