@@ -1,13 +1,13 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-
-
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from './src/firebase-config/firebasecofing';
 import { Ionicons } from '@expo/vector-icons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 
 import Welcome from './src/screens/Welcome';
@@ -20,10 +20,24 @@ import NewClient from './src/screens/NewClient';
 
 
 
-const Tab = createBottomTabNavigator();
+
+
 
 export default function App() {
   const Stack = createStackNavigator();
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const unsubscribeAuth = onAuthStateChanged(auth, (userAuth) => {
+      if (userAuth) {
+        setUser(userAuth); // Se o usuário estiver logado, armazena os dados do usuário
+      } else {
+        setUser(null); // Caso contrário, garante que o usuário não estará logado
+      }
+    });
+
+    return () => unsubscribeAuth();
+  }, []);
   return (
     <NavigationContainer>
       <Stack.Navigator>

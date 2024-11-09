@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { SafeAreaView, TextInput, TouchableOpacity, Text, StyleSheet, Alert } from 'react-native';
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { SafeAreaView, View, TextInput, TouchableOpacity, Text, StyleSheet, Alert, Switch } from 'react-native';
+import { getAuth, signInWithEmailAndPassword, setPersistence, browserLocalPersistence, browserSessionPersistence } from 'firebase/auth';
 import { useNavigation } from '@react-navigation/native';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [keepLoggedIn, setKeepLoggedIn] = useState(false);
   const navigation = useNavigation();
 
   const handleLogin = async () => {
@@ -15,8 +16,11 @@ export default function Login() {
     }
 
     const auth = getAuth();
+    // Configurar persistência de acordo com o estado de `keepLoggedIn`
+    
 
     try {
+      const persistenceMode = keepLoggedIn ? browserLocalPersistence : browserSessionPersistence;
       // Tenta fazer o login com e-mail e senha
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const isAdmin = userCredential.user.uid === "9izwMEqZtJcvkS0tCyGuF7xAC8t1"; // CRIANDO A CHAVE DE ADM 
@@ -65,6 +69,15 @@ export default function Login() {
         placeholder="Digite sua senha"
         secureTextEntry
       />
+
+
+      <View style={styles.switchContainer}>
+        <Text>Manter login</Text>
+        <Switch
+          value={keepLoggedIn}
+          onValueChange={setKeepLoggedIn}
+        />
+      </View>
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Entrar</Text>
       </TouchableOpacity>

@@ -4,47 +4,49 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { auth } from '../firebase-config/firebasecofing'; 
 import { getFirestore, doc, getDoc, collection, getDocs } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth'; 
+import { useNavigation } from '@react-navigation/native';
 
 export default function Home() {
   const [user, setUser] = useState(null);
   const [userData, setUserData] = useState(null);
   const [mechanics, setMechanics] = useState([]); // Novo estado para armazenar mecânicas
+  const [loading, setLoading] = useState(true); // Novo estado para carregamento
   
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, async (userAuth) => {
       if (userAuth) {
-        setUser(userAuth); 
-
-        // Acesso ao Firestore para pegar dados adicionais do usuário
-        const db = getFirestore(); // Instancia o Firestore
-        const userRef = doc(db, 'usuarios', userAuth.uid); 
-        const docSnap = await getDoc(userRef); 
+        setUser(userAuth);
+        const db = getFirestore();
+        const userRef = doc(db, 'usuarios', userAuth.uid);
+        const docSnap = await getDoc(userRef);
 
         if (docSnap.exists()) {
-          setUserData(docSnap.data()); 
+          setUserData(docSnap.data());
         } else {
           console.log('No such document!');
         }
       } else {
-        setUser(null); // Caso não esteja logado, limpa o estado do usuário
-        setUserData(null); // Limpa os dados do usuário
+        navigation.navigate('Login'); // Redireciona para a tela de login se o usuário não estiver logado
       }
+      setLoading(false); // Finaliza o estado de carregamento
     });
 
-    // Função para buscar as mecânicas cadastradas no Firestore
     const fetchMechanics = async () => {
       const db = getFirestore();
       const mechanicsCollection = collection(db, 'mecanicas');
       const mechanicsSnapshot = await getDocs(mechanicsCollection);
       const mechanicsList = mechanicsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setMechanics(mechanicsList); // Define a lista de mecânicas no estado
+      setMechanics(mechanicsList);
     };
 
-    fetchMechanics(); // Chama a função para buscar as mecânicas
+    fetchMechanics();
 
-    // Limpeza do listener ao desmontar o componente
     return () => unsubscribeAuth();
   }, []);
+
+  if (loading) {
+    return <ActivityIndicator size="large" color="#0000ff" />;
+  }
 
   // Renderiza cada card de mecânica
   const renderMechanicCard = ({ item }) => (

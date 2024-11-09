@@ -15,28 +15,24 @@ export default function HomeAdm() {
 
     useEffect(() => {
         const unsubscribeAuth = onAuthStateChanged(auth, async (userAuth) => {
-            if (userAuth) {
-                setUser(userAuth);
-
-                // Acesso ao Firestore para pegar dados adicionais do usuário
-                const db = getFirestore(); // Instancia o Firestore
-                const userRef = doc(db, 'usuarios', userAuth.uid);
-                const docSnap = await getDoc(userRef);
-
-                if (docSnap.exists()) {
-                    setUserData(docSnap.data());
-                } else {
-                    console.log('No such document!');
-                }
+          if (userAuth) {
+            setUser(userAuth);
+            const db = getFirestore();
+            const userRef = doc(db, 'usuarios', userAuth.uid);
+            const docSnap = await getDoc(userRef);
+      
+            if (docSnap.exists()) {
+              setUserData(docSnap.data());
             } else {
-                setUser(null); // Caso não esteja logado, limpa o estado do usuário
-                setUserData(null); // Limpa os dados do usuário
+              console.log('No such document!');
             }
+          } else {
+            navigation.navigate('Login'); // Redireciona para a tela de login
+          }
         });
-
-        // Limpeza do listener ao desmontar o componente
+      
         return () => unsubscribeAuth();
-    }, []);
+      }, []);
     return (
         <SafeAreaView>
             <Text>
