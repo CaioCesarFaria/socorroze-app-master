@@ -9,47 +9,85 @@ import { useNavigation } from "@react-navigation/native";
 
 
 export default function HomeAdm() {
-    const navigation = useNavigation();
-    const [user, setUser] = useState(null);
-    const [userData, setUserData] = useState(null);
+  const navigation = useNavigation();
+  const [user, setUser] = useState(null);
+  const [userData, setUserData] = useState(null);
 
-    useEffect(() => {
-        const unsubscribeAuth = onAuthStateChanged(auth, async (userAuth) => {
+  useEffect(() => {
+      const unsubscribeAuth = onAuthStateChanged(auth, async (userAuth) => {
           if (userAuth) {
-            setUser(userAuth);
-            const db = getFirestore();
-            const userRef = doc(db, 'usuarios', userAuth.uid);
-            const docSnap = await getDoc(userRef);
-      
-            if (docSnap.exists()) {
-              setUserData(docSnap.data());
-            } else {
-              console.log('No such document!');
-            }
+              setUser(userAuth);
+
+              // Acesso ao Firestore para pegar dados adicionais do usuário
+              const db = getFirestore(); // Instancia o Firestore
+              const userRef = doc(db, 'usuarios', userAuth.uid);
+              const docSnap = await getDoc(userRef);
+
+              if (docSnap.exists()) {
+                  setUserData(docSnap.data());
+              } else {
+                  console.log('No such document!');
+              }
           } else {
-            navigation.navigate('Login'); // Redireciona para a tela de login
+              setUser(null); // Caso não esteja logado, limpa o estado do usuário
+              setUserData(null); // Limpa os dados do usuário
           }
-        });
-      
-        return () => unsubscribeAuth();
-      }, []);
-    return (
-        <SafeAreaView>
-            <Text>
-                {user ? `Olá, ${user.displayName || userData?.nome || 'Usuário'}` : 'Você não está logado'}
-            </Text>
-            
-            <TouchableOpacity style={styles.btnNewClient} onPress={()=> navigation.navigate('NewClient')}>
-                <Text style={styles.buttonText}>Cadastrar Novo Cliente</Text>
-            </TouchableOpacity>
-        </SafeAreaView>
-    );
+      });
+
+      // Limpeza do listener ao desmontar o componente
+      return () => unsubscribeAuth();
+  }, []);
+
+  return (
+      <SafeAreaView style={styles.container}>
+          <Text style={styles.welcomeText}>
+              {user ? `Olá, ${user.displayName || userData?.nome || 'Usuário'}` : 'Você não está logado'}
+          </Text>
+          
+          <TouchableOpacity style={styles.btnNewClient} onPress={() => navigation.navigate('NewClient')}>
+              <Text style={styles.buttonText}>Cadastrar Novo Cliente</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.btnHome} onPress={() => navigation.navigate('Home')}>
+              <Text style={styles.buttonText}>Ir para a Página Inicial</Text>
+          </TouchableOpacity>
+      </SafeAreaView>
+  );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-})
+  container: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 16,
+      backgroundColor: '#f4f4f4', // cor de fundo suave
+  },
+  welcomeText: {
+      fontSize: 20,
+      color: '#333',
+      marginBottom: 20,
+      textAlign: 'center',
+  },
+  btnNewClient: {
+      backgroundColor: '#007BFF', // cor do botão
+      padding: 16,
+      borderRadius: 5,
+      width: '80%',
+      marginBottom: 20,
+      alignItems: 'center',
+  },
+  btnHome: {
+      backgroundColor: '#007BFF', 
+      padding: 16,
+      borderRadius: 5,
+      width: '80%',
+      marginBottom: 20,
+      alignItems: 'center',
+  },
+  buttonText: {
+      color: 'white',
+      fontSize: 16,
+      fontWeight: 'bold',
+  },
+});

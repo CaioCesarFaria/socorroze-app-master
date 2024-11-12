@@ -8,8 +8,9 @@ import {
     TouchableOpacity,
     Alert,
 } from "react-native";
+
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import app from '../firebase-config/firebasecofing'; 
+import app from '../firebase-config/firebasecofing';
 import { getAuth, createUserWithEmailAndPassword, fetchSignInMethodsForEmail } from 'firebase/auth';
 import { getFirestore, doc, setDoc } from 'firebase/firestore';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -23,11 +24,17 @@ export default function Cadastro() {
     const [confirmarSenha, setConfirmarSenha] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [termosAceitos, setTermosAceitos] = useState(false);
+
     const navigation = useNavigation();
     const auth = getAuth(app);
     const db = getFirestore(app);
 
     const handleCadastro = async () => {
+        if (!termosAceitos) {
+            alert("Você precisa aceitar os termos de privacidade para se cadastrar.");
+            return;
+        }
         if (senha !== confirmarSenha) {
             alert("As senhas não coincidem!");
             return;
@@ -43,7 +50,7 @@ export default function Cadastro() {
             const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
             console.log("Usuário cadastrado:", userCredential.user);
             navigation.navigate("Welcome");
-            
+
 
             const userDoc = doc(db, 'usuarios', userCredential.user.uid);
             await setDoc(userDoc, {
@@ -73,7 +80,7 @@ export default function Cadastro() {
                         placeholder="Digite seu nome"
                         autoCorrect={false}
                     />
-                    
+
                     <Text style={styles.inputLabel}>Telefone</Text>
                     <TextInput
                         style={styles.cadastroInput}
@@ -121,6 +128,27 @@ export default function Cadastro() {
                             <Icon name={showConfirmPassword ? "eye-off" : "eye"} size={24} color="gray" />
                         </TouchableOpacity>
                     </View>
+                    <View style={styles.checkboxContainer}>
+                        <TouchableOpacity
+                            onPress={() => setTermosAceitos(!termosAceitos)}
+                            style={styles.checkboxOption}
+                        >
+                            <Icon
+                                name={termosAceitos ? "checkbox" : "square-outline"}
+                                size={24}
+                                color="#007bff"
+                            />
+                            <Text style={styles.checkboxText}>
+                                Li e concordo com os
+                                <Text
+                                    onPress={() => navigation.navigate('TermosDePrivacidade')}
+                                    style={styles.linkText}
+                                >
+                                    {" "}termos de privacidade
+                                </Text>
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
 
                     <TouchableOpacity onPress={handleCadastro}>
                         <Text style={styles.cadastrarButton}>Cadastrar</Text>
@@ -153,7 +181,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#ccc',
         borderRadius: 5,
-        padding: 15, 
+        padding: 15,
         marginBottom: 16,
         width: '100%',
     },
@@ -167,6 +195,25 @@ const styles = StyleSheet.create({
         right: 10, // Posiciona o ícone à direita
         padding: 10,
     },
+    checkboxContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        marginVertical: 10,
+    },
+    checkboxOption: {
+        flexDirection: "row",
+        alignItems: "center",
+    },
+    checkboxText: {
+        fontSize: 14,
+        color: "#000",
+        marginLeft: 8,
+    },
+    linkText: {
+        color: "#1E90FF", // Azul para indicar o link
+        textDecorationLine: "underline",
+    },
+
     cadastrarButton: {
         textAlign: 'center',
         padding: 10,

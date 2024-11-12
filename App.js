@@ -7,7 +7,7 @@ import { auth } from './src/firebase-config/firebasecofing';
 import { Ionicons } from '@expo/vector-icons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { StatusBar } from 'expo-status-bar';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import {  StyleSheet, Text, View } from 'react-native';
 
 
 import Welcome from './src/screens/Welcome';
@@ -16,7 +16,7 @@ import Cadastro from './src/screens/Cadastro';
 import Home from './src/screens/Home';
 import HomeAdm from './src/screens/HomeAdm';
 import NewClient from './src/screens/NewClient';
-
+import TermosDePrivacidade from './src/screens/TermosDePrivacidade';
 
 
 
@@ -47,6 +47,7 @@ export default function App() {
         <Stack.Screen name='Login' component={Login} />
         <Stack.Screen name= 'HomeAdm' component={HomeAdm}/>
         <Stack.Screen name='NewClient' component={NewClient}/>
+        <Stack.Screen name='TermosDePrivacidade' component={TermosDePrivacidade}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

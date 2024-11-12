@@ -30,7 +30,8 @@ export default function Welcome(){
                 <Text style={styles.buttonInicioText}>Entrar</Text>
             </TouchableOpacity>
             <View style={styles.containerPrivacidade}> 
-            <TouchableOpacity style={styles.buttonPrivacidade}>
+            <TouchableOpacity style={styles.buttonPrivacidade}
+            onPress={() => navigation.navigate('TermosDePrivacidade')}>
                 <Text style={styles.buttonPrivacidadeText}>Políticas e Termos de Privacidade</Text>
             </TouchableOpacity>
             </View>

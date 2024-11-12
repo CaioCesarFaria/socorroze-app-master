@@ -11,6 +11,7 @@ export default function Home() {
   const [userData, setUserData] = useState(null);
   const [mechanics, setMechanics] = useState([]); // Novo estado para armazenar mecânicas
   const [loading, setLoading] = useState(true); // Novo estado para carregamento
+
   
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, async (userAuth) => {
@@ -44,9 +45,7 @@ export default function Home() {
     return () => unsubscribeAuth();
   }, []);
 
-  if (loading) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
-  }
+  
 
   // Renderiza cada card de mecânica
   const renderMechanicCard = ({ item }) => (
