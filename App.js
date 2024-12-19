@@ -17,7 +17,7 @@ import Home from './src/screens/Home';
 import HomeAdm from './src/screens/HomeAdm';
 import NewClient from './src/screens/NewClient';
 import TermosDePrivacidade from './src/screens/TermosDePrivacidade';
-
+import SplashScreen from './src/screens/Splash';
 
 
 
@@ -26,6 +26,7 @@ import TermosDePrivacidade from './src/screens/TermosDePrivacidade';
 export default function App() {
   const Stack = createStackNavigator();
   const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, (userAuth) => {
@@ -34,10 +35,16 @@ export default function App() {
       } else {
         setUser(null); // Caso contrário, garante que o usuário não estará logado
       }
+      setTimeout(() => {
+        setIsLoading(false); 
+      }, 1500);
     });
-
+    
     return () => unsubscribeAuth();
   }, []);
+  if (isLoading) { 
+    return <SplashScreen />; 
+  }
   return (
     <NavigationContainer>
       <Stack.Navigator>

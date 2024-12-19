@@ -54,6 +54,7 @@ export default function Login() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <Text style={styles.title}>Faça seu login</Text>
       <TextInput
         style={styles.input}
         value={email}
@@ -91,6 +92,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 16,
+    backgroundColor:"#f4b516"
   },
   input: {
     width: '100%',

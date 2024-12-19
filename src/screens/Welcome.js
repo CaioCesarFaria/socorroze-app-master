@@ -6,7 +6,8 @@ import {
     SafeAreaView,
     Text,
     TouchableOpacity,
-    View
+    View,
+    Image
 } from "react-native";
 
 export default function Welcome(){
@@ -15,8 +16,9 @@ export default function Welcome(){
     return(
         <SafeAreaView style={styles.container}>
             <StatusBar style="auto"/>
+            <Image style={styles.logoWelcome} source={require("../../assets/icon_tools.png")}></Image>
             <Text style={styles.titleWelcome}>Olá, seja bem-vindo ao Socorro zé!</Text>
-            
+            <Text style={styles.subtitleWelcome}>Todos os serviços mecânicos em um só lugar</Text>
             <TouchableOpacity 
             style={styles.buttonInicio}
             onPress={()=> navigation.navigate('Cadastro')}
@@ -43,19 +45,32 @@ const styles = StyleSheet.create({
     container:{
         flex:1,
         alignItems:"center",
-        justifyContent:'flex-start'
+        justifyContent:'center',
+        backgroundColor:"#f4b516"
         
+    },
+    logoWelcome: {
+        width:100,
+        resizeMode:'contain'
     },
     titleWelcome:{
         
-        color:"#000",
-        marginTop:40,
-        marginBottom:40,
+        color:"#27294A",
+        marginTop:10,
+        marginBottom:80,
         fontSize:26,
+        textAlign:'center',
+        fontWeight:'bold'
+    },
+    subtitleWelcome: {
+        color:"#27294A",
+        marginTop:20,
+        marginBottom:40,
+        fontSize:18,
         textAlign:'center'
     },
     buttonInicio: {
-        backgroundColor:"#b3b3b3",
+        backgroundColor:"#803B3B",
         color:"#000",
         width:200,
         fontSize:24,
@@ -69,7 +84,11 @@ const styles = StyleSheet.create({
     },
     buttonInicioText: {
         fontSize:20,
+        color:"#fff"
 
+    },
+    buttonPrivacidadeText: {
+        color:"#27294A"
     }
 
 })

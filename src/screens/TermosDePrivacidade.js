@@ -10,7 +10,7 @@ export default function TermosDePrivacidade() {
                     {/* Conteúdo dos termos de privacidade */}
                     Estes são os termos de privacidade do aplicativo "Socorro Zé".
 
-
+                    
                     1. Introdução
                     Bem-vindo ao aplicativo "Socorro Zé"! Nosso compromisso é proteger sua privacidade e garantir uma experiência segura e transparente para nossos usuários e parceiros mecânicos. Esta política explica como coletamos, usamos, e protegemos suas informações.
 
@@ -54,14 +54,16 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
+        backgroundColor:"#f4b516"
     },
     title: {
         fontSize: 24,
         fontWeight: "bold",
         marginBottom: 10,
+        color:"#27294A",
     },
     content: {
-        fontSize: 16,
+        fontSize: 18,
         color: "#333",
     },
 });
