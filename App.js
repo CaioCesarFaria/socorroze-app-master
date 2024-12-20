@@ -18,6 +18,7 @@ import HomeAdm from './src/screens/HomeAdm';
 import NewClient from './src/screens/NewClient';
 import TermosDePrivacidade from './src/screens/TermosDePrivacidade';
 import SplashScreen from './src/screens/Splash';
+import Details from './src/screens/Details';
 
 
 
@@ -55,6 +56,7 @@ export default function App() {
         <Stack.Screen name= 'HomeAdm' component={HomeAdm}/>
         <Stack.Screen name='NewClient' component={NewClient}/>
         <Stack.Screen name='TermosDePrivacidade' component={TermosDePrivacidade}/>
+        <Stack.Screen name='Details' component={Details}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

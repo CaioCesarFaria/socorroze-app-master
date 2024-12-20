@@ -1,3 +1,4 @@
+// NewClient.js
 import React, { useState } from "react";
 import {
     SafeAreaView,
@@ -11,7 +12,7 @@ import {
 } from "react-native";
 import { Picker } from '@react-native-picker/picker';
 import app from '../firebase-config/firebasecofing';
-import { getFirestore, collection, addDoc } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, updateDoc } from 'firebase/firestore';
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
 
@@ -28,6 +29,7 @@ export default function NewClient() {
     const [cpfResponsavel, setCpfResponsavel] = useState('');
     const [categorias, setCategorias] = useState([]);
     const [endereco, setEndereco] = useState('');
+    const [documentId, setDocumentId] = useState('');
     const db = getFirestore(app);
 
     const categoriasPredefinidas = ["Elétrica", "Mecânica", "Lanternagem", "Guincho", "Borracharia", "Pintura", "Revisão"];
@@ -69,7 +71,7 @@ export default function NewClient() {
     const handleNewClient = async () => {
         try {
             // Adiciona um novo documento com os dados da mecânica
-            await addDoc(collection(db, "mecanicas"), {
+            const docRef = await addDoc(collection(db, "mecanicas"), {
                 cidade: cidade,
                 nomeFantasia: nomeFantasia,
                 atendeMoto: atendeMoto,
@@ -80,8 +82,10 @@ export default function NewClient() {
                 categorias: categorias,
                 endereco: endereco,
                 diasFuncionamento: diasFuncionamento,
+                
             });
-
+            // Armazena o ID do documento recém-criado
+            await updateDoc(docRef, { id: docRef.id });
             Alert.alert("Sucesso!", "Mecânica cadastrada com sucesso.");
             // Limpa os campos após o cadastro
             setCidade('');
