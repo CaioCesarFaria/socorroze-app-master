@@ -7,29 +7,37 @@ import {
     Text,
     TouchableOpacity,
     View,
-    Image
+    Image,
+    ImageBackground
 } from "react-native";
 
 export default function Welcome(){
 
     const navigation = useNavigation();
     return(
+        <ImageBackground
+        source={require("../../assets/bgfull.png")}
+        style={styles.bgImagem}
+        resizeMode="cover"
+        >
         <SafeAreaView style={styles.container}>
             <StatusBar style="auto"/>
-            <Image style={styles.logoWelcome} source={require("../../assets/icon_tools.png")}></Image>
+            <Image style={styles.logoWelcome} source={require("../../assets/iconlogo.png")}></Image>
+            <View style={styles.boxText}>
             <Text style={styles.titleWelcome}>Olá, seja bem-vindo ao Socorro zé!</Text>
             <Text style={styles.subtitleWelcome}>Todos os serviços mecânicos em um só lugar</Text>
+            </View>
             <TouchableOpacity 
-            style={styles.buttonInicio}
+            style={styles.buttonCadastro}
             onPress={()=> navigation.navigate('Cadastro')}
             >
-                <Text style={styles.buttonInicioText}>Cadastrar</Text>
+                <Text style={styles.buttonCadastroText}>Cadastrar</Text>
             </TouchableOpacity>
             <TouchableOpacity 
-            style={styles.buttonInicio}
+            style={styles.buttonEntrar}
             onPress={()=> navigation.navigate('Login')}
             >
-                <Text style={styles.buttonInicioText}>Entrar</Text>
+                <Text style={styles.buttonEntrarText}>Entrar</Text>
             </TouchableOpacity>
             <View style={styles.containerPrivacidade}> 
             <TouchableOpacity style={styles.buttonPrivacidade}
@@ -38,26 +46,36 @@ export default function Welcome(){
             </TouchableOpacity>
             </View>
         </SafeAreaView>
+        </ImageBackground>
     )
 }
 
 const styles = StyleSheet.create({
+    bgImagem: {
+        flex:1,
+        width: "100%",
+        height: "100%",
+    },
     container:{
         flex:1,
         alignItems:"center",
         justifyContent:'center',
-        backgroundColor:"#f4b516"
+        
         
     },
     logoWelcome: {
-        width:100,
+        width:150,
         resizeMode:'contain'
+    },
+    boxText:{
+        flexDirection:'column',
+
     },
     titleWelcome:{
         
         color:"#27294A",
         marginTop:10,
-        marginBottom:80,
+        marginBottom:10,
         fontSize:26,
         textAlign:'center',
         fontWeight:'bold'
@@ -66,11 +84,12 @@ const styles = StyleSheet.create({
         color:"#27294A",
         marginTop:20,
         marginBottom:40,
-        fontSize:18,
-        textAlign:'center'
+        fontSize:16,
+        textAlign:'center',
+        paddingHorizontal:'10%'
     },
-    buttonInicio: {
-        backgroundColor:"#803B3B",
+    buttonCadastro: {
+        backgroundColor:"#C54343",
         color:"#000",
         width:200,
         fontSize:24,
@@ -82,13 +101,34 @@ const styles = StyleSheet.create({
         borderRadius:12,
 
     },
-    buttonInicioText: {
+    buttonEntrar: {
+        backgroundColor:"#FFFFFF",
+        color:"#000",
+        width:200,
+        fontSize:24,
+        paddingHorizontal:2,
+        paddingVertical:3,
+        alignItems:'center',
+        justifyContent:'center',
+        marginBottom:30,
+        borderRadius:12,
+
+    },
+    buttonCadastroText: {
         fontSize:20,
-        color:"#fff"
+        color:"#fff",
+        fontWeight:'bold'
+
+    },
+    buttonEntrarText: {
+        fontSize:20,
+        color:"#C54343",
+        fontWeight:'bold'
 
     },
     buttonPrivacidadeText: {
-        color:"#27294A"
+        color:"#C54343",
+        fontStyle:'italic'
     }
 
 })
