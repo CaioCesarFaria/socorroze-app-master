@@ -126,6 +126,7 @@ const styles = StyleSheet.create({
         fontWeight:'bold'
 
     },
+    
     buttonPrivacidadeText: {
         color:"#C54343",
         fontStyle:'italic'
