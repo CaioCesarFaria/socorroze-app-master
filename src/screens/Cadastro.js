@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.4, // Opacidade da sombra (0 a 1)
     shadowRadius: 10, // Desfoque da sombra
 
-    elevation: 15, // Elevação (necessário para Android)
+    elevation: 10, // Elevação (necessário para Android)
     padding: 15,
     marginBottom: 16,
     width: "100%",
