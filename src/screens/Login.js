@@ -12,7 +12,7 @@ import {
   Image,
   TouchableWithoutFeedback,
   Keyboard,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,
 } from "react-native";
 import {
   getAuth,
@@ -21,6 +21,8 @@ import {
   browserLocalPersistence,
   browserSessionPersistence,
 } from "firebase/auth";
+import { Ionicons } from "@expo/vector-icons";
+
 import { useNavigation } from "@react-navigation/native";
 
 export default function Login() {
@@ -85,6 +87,12 @@ export default function Login() {
         style={styles.bgImagem}
         resizeMode="cover"
       >
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
+          <Ionicons name="arrow-back" size={28} color="#007AFF" />
+        </TouchableOpacity>
         <Image
           style={styles.logoWelcome}
           source={require("../../assets/iconlogo.png")}
@@ -111,11 +119,19 @@ export default function Login() {
         </View>
         <View style={styles.boxLinha}>
           <View style={styles.switchContainer}>
-            <Text style={styles.switchText} >Manter login</Text>
-            <Switch value={keepLoggedIn} onValueChange={setKeepLoggedIn} />
+            <Text style={styles.switchText}>Manter login</Text>
+            <Switch
+              trackColor={{ false: "#fff", true: "#C54343" }} // Cor do espaço
+              thumbColor={keepLoggedIn ? "#fff" : "#FF0000"} // Cor da bolinha
+              value={keepLoggedIn}
+              onValueChange={setKeepLoggedIn}
+            />
           </View>
-          <TouchableOpacity style={styles.btnEsqueciSenha}>
-            <Text style={styles.esqueciSenhaText} >Esqueci minha senha</Text>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("EsqueciSenha")}
+            style={styles.btnEsqueciSenha}
+          >
+            <Text style={styles.esqueciSenhaText}>Esqueci minha senha</Text>
           </TouchableOpacity>
         </View>
         <TouchableOpacity style={styles.button} onPress={handleLogin}>
@@ -154,7 +170,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: "10%",
   },
   boxInputs: {
-    paddingHorizontal:10,
+    paddingHorizontal: 10,
   },
   inputLabel: {
     marginBottom: 8,
@@ -163,7 +179,6 @@ const styles = StyleSheet.create({
     color: "#32345E",
   },
   input: {
-    
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 7,
@@ -172,41 +187,40 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 6 }, // Deslocamento da sombra
     shadowOpacity: 0.4, // Opacidade da sombra (0 a 1)
     shadowRadius: 10, // Desfoque da sombra
-    fontSize:14,
+    fontSize: 14,
     elevation: 10, // Elevação (necessário para Android)
-    color:"#000",
+    color: "#000",
     marginBottom: 16,
     width: "100%",
-    
   },
   boxLinha: {
-    flexDirection:'row',
-    alignItems:'center',
-    justifyContent:'space-between',
-    paddingHorizontal:5
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 5,
   },
   switchContainer: {
     flexDirection: "row-reverse",
     alignItems: "center",
   },
   switchText: {
-    color:'#32345E',
-    fontSize:14,
-    fontStyle:'italic',
-    fontWeight:'bold'
+    color: "#32345E",
+    fontSize: 14,
+    fontStyle: "italic",
+    fontWeight: "bold",
   },
   esqueciSenhaText: {
-    color:'#32345E',
-    fontSize:14,
-    fontStyle:'italic',
-    fontWeight:'bold'
+    color: "#32345E",
+    fontSize: 14,
+    fontStyle: "italic",
+    fontWeight: "bold",
   },
   button: {
     backgroundColor: "#C54343",
     padding: 16,
     borderRadius: 50,
     alignItems: "center",
-    paddingHorizontal:"10%"
+    paddingHorizontal: "10%",
   },
   buttonText: {
     color: "white",

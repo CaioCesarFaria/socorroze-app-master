@@ -19,6 +19,7 @@ import NewClient from './src/screens/NewClient';
 import TermosDePrivacidade from './src/screens/TermosDePrivacidade';
 import SplashScreen from './src/screens/Splash';
 import Details from './src/screens/Details';
+import EsqueciSenha from './src/screens/EsqueciSenha';
 
 
 
@@ -52,11 +53,12 @@ export default function App() {
         <Stack.Screen name='Welcome' options={{headerShown:false}} component={Welcome}/>
         <Stack.Screen name='Home' component={Home}/>
         <Stack.Screen name='Cadastro' component={Cadastro} />
-        <Stack.Screen name='Login' component={Login} />
+        <Stack.Screen name='Login' options={{headerShown:false}} component={Login} />
         <Stack.Screen name= 'HomeAdm' component={HomeAdm}/>
         <Stack.Screen name='NewClient' component={NewClient}/>
         <Stack.Screen name='TermosDePrivacidade' component={TermosDePrivacidade}/>
         <Stack.Screen name='Details' component={Details}/>
+        <Stack.Screen name='EsqueciSenha' component={EsqueciSenha}/>
       </Stack.Navigator>
     </NavigationContainer>
   );
