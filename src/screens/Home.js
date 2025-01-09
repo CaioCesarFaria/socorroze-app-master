@@ -1,3 +1,4 @@
+// Home.js
 import React, { useEffect, useState } from "react";
 import {
   SafeAreaView,
@@ -9,21 +10,27 @@ import {
   ActivityIndicator,
   ImageBackground,
 } from "react-native";
-import { getFirestore, doc, getDoc, collection, getDocs } from "firebase/firestore";
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  collection,
+  getDocs,
+} from "firebase/firestore";
 import app from "../firebase-config/firebasecofing";
 import { getAuth } from "firebase/auth";
 import { useNavigation } from "@react-navigation/native";
+import moment from "moment";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 export default function Home() {
   const navigation = useNavigation();
   const db = getFirestore(app);
   const auth = getAuth(app);
 
-
   const [nomeUsuario, setNomeUsuario] = useState("");
   const [mecanicas, setMecanicas] = useState([]);
   const [loading, setLoading] = useState(true);
-
 
   // Função para buscar os dados do usuário logado
   const fetchUsuario = async () => {
@@ -70,16 +77,49 @@ export default function Home() {
     fetchMecanicas();
   }, []);
 
+  // Função para verificar se a mecânica está aberta
+  const isMechanicOpen = (diasFuncionamento) => {
+    const diaAtual = moment().format("dddd").toLowerCase(); // Nome do dia em inglês
+    const horarioAtual = moment().format("HH:mm"); // Hora atual no formato 24h
+
+    if (diasFuncionamento[diaAtual]?.aberto) {
+      const { abertura, fechamento } = diasFuncionamento[diaAtual];
+      return horarioAtual >= abertura && horarioAtual <= fechamento;
+    }
+    return false;
+    
+  };
+
   // Renderização da lista de mecânicas
-  const renderItem = ({ item }) => (
-    <TouchableOpacity
-      style={styles.card}
-      onPress={() => navigation.navigate("Details", { id: item.id })}
-    >
-      <Text style={styles.cardTitle}>{item.nomeFantasia}</Text>
-      <Text style={styles.cardSubtitle}>{item.cidade}</Text>
-    </TouchableOpacity>
-  );
+  const renderItem = ({ item }) => {
+    const aberto = isMechanicOpen(item.diasFuncionamento);
+    return (
+      <TouchableOpacity
+        style={styles.card}
+        onPress={() => navigation.navigate("Details", { id: item.id })}
+      >
+        <View style={styles.status}>
+          <View
+            style={[
+              styles.statusCircle,
+              { backgroundColor: aberto ? "green" : "red" },
+            ]}
+          />
+          <Text style={styles.statusText}>{aberto ? "Aberto" : "Fechado"}</Text>
+        </View>
+        <Text style={styles.cardTitle}>{item.nomeFantasia}</Text>
+        <Text style={styles.cardSubtitle}>{item.cidade}</Text>
+        <TouchableOpacity
+          style={styles.cardZap}
+          onPress={() =>
+            Linking.openURL(`https://wa.me/${item.telefoneResponsavel}`)
+          }
+        >
+          <Ionicons name="logo-whatsapp" size={24} color="black" />
+        </TouchableOpacity>
+      </TouchableOpacity>
+    );
+  };
 
   if (loading) {
     return (
@@ -95,7 +135,7 @@ export default function Home() {
         source={require("../../assets/bgfull.png")}
         style={styles.bgImagem}
         resizeMode="cover"
-      > 
+      >
         {loading ? (
           <ActivityIndicator size="large" color="#C54343" />
         ) : (
@@ -104,13 +144,13 @@ export default function Home() {
           </View>
         )}
         <View style={styles.containerMecanicas}>
-        <Text style={styles.title}>Mecânicas Cadastradas</Text>
-        <FlatList
-          data={mecanicas}
-          keyExtractor={(item) => item.id}
-          renderItem={renderItem}
-          contentContainerStyle={styles.list}
-        />
+          <Text style={styles.title}>Mecânicas Cadastradas</Text>
+          <FlatList
+            data={mecanicas}
+            keyExtractor={(item) => item.id}
+            renderItem={renderItem}
+            contentContainerStyle={styles.list}
+          />
         </View>
       </ImageBackground>
     </SafeAreaView>
@@ -126,20 +166,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f5f5f5",
-    
   },
   textSaudacao: {
-    color:"#32345E",
-    fontSize:16,
-    fontWeight:'bold'
-    
+    color: "#32345E",
+    fontSize: 16,
+    fontWeight: "bold",
   },
   containerMecanicas: {
-    flex:1,
-    backgroundColor:"#C54343",
-    marginTop:20,
-    marginHorizontal:20,
-    borderRadius:7,
+    flex: 1,
+    backgroundColor: "#C54343",
+    marginTop: 20,
+    marginHorizontal: 20,
+    borderRadius: 7,
   },
   title: {
     fontSize: 24,
@@ -170,5 +208,20 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#666",
     marginTop: 4,
+  },
+  status: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  statusCircle: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    marginRight: 8,
+  },
+  statusText: {
+    fontSize: 14,
+    color: "#666",
   },
 });
