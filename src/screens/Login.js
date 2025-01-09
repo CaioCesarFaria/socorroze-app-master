@@ -38,7 +38,7 @@ export default function Login() {
     }
 
     const auth = getAuth();
-    // Configurar persistência de acordo com o estado de `keepLoggedIn`
+    // Configurar persistência de acordo com o estado de keepLoggedIn
 
     try {
       const persistenceMode = keepLoggedIn
@@ -91,7 +91,7 @@ export default function Login() {
           style={styles.backButton}
           onPress={() => navigation.goBack()}
         >
-          <Ionicons name="arrow-back" size={28} color="#007AFF" />
+          <Ionicons name="arrow-back" size={32} color="#C54343" />
         </TouchableOpacity>
         <Image
           style={styles.logoWelcome}
@@ -154,6 +154,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 16,
     backgroundColor: "#f4b516",
+  },
+  backButton: {
+    paddingTop:25,
+    paddingLeft:5,
   },
   logoWelcome: {
     width: 150,
@@ -220,7 +224,8 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 50,
     alignItems: "center",
-    paddingHorizontal: "10%",
+    marginHorizontal:"10%",
+    marginTop:10,
   },
   buttonText: {
     color: "white",

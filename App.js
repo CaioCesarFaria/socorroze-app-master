@@ -52,7 +52,7 @@ export default function App() {
       <Stack.Navigator>
         <Stack.Screen name='Welcome' options={{headerShown:false}} component={Welcome}/>
         <Stack.Screen name='Home' component={Home}/>
-        <Stack.Screen name='Cadastro' component={Cadastro} />
+        <Stack.Screen name='Cadastro' options={{headerShown:false}} component={Cadastro} />
         <Stack.Screen name='Login' options={{headerShown:false}} component={Login} />
         <Stack.Screen name= 'HomeAdm' component={HomeAdm}/>
         <Stack.Screen name='NewClient' component={NewClient}/>

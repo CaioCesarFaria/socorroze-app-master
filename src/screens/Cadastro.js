@@ -26,7 +26,7 @@ import {
 import { getFirestore, doc, setDoc } from "firebase/firestore";
 import Icon from "react-native-vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
-
+import { Ionicons } from "@expo/vector-icons";
 export default function Cadastro() {
   const [nome, setNome] = useState("");
   const [telefone, setTelefone] = useState("");
@@ -94,6 +94,12 @@ export default function Cadastro() {
               behavior={Platform.OS === "ios" ? "padding" : undefined}
             >
               <ScrollView contentContainerStyle={styles.scrollViewContent}>
+                <TouchableOpacity
+                  style={styles.backButton}
+                  onPress={() => navigation.goBack()}
+                >
+                  <Ionicons name="arrow-back" size={32} color="#C54343" />
+                </TouchableOpacity>
                 <Image
                   style={styles.logoWelcome}
                   source={require("../../assets/iconcadastro.png")}
@@ -178,10 +184,11 @@ export default function Cadastro() {
                       style={styles.checkboxOption}
                     >
                       <Icon
-                        name={termosAceitos ? "checkmark-circle" : "ellipse-outline"}
+                        name={
+                          termosAceitos ? "checkmark-circle" : "ellipse-outline"
+                        }
                         size={24}
                         color="#fff"
-                        
                         backgroundColor={termosAceitos ? "green" : "white"}
                         style={styles.checkboxIcon}
                       />
@@ -223,6 +230,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     padding: 16,
+  },
+  backButton: {
+    paddingTop:25,
+    paddingLeft:5,
   },
   logoWelcome: {
     width: 100,
@@ -285,21 +296,18 @@ const styles = StyleSheet.create({
   checkboxOption: {
     flexDirection: "row",
     alignItems: "center",
-    
   },
   checkboxIcon: {
-    borderRadius:50,
-    
+    borderRadius: 50,
   },
   checkboxText: {
     fontSize: 14,
     color: "#000",
     marginLeft: 8,
-    fontStyle:'italic'
+    fontStyle: "italic",
   },
   linkText: {
     color: "#C54343", // Azul para indicar o link
-    
   },
 
   cadastrarButton: {
@@ -308,8 +316,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#C54343",
     color: "#FFF",
     borderRadius: 50,
-    width:'50%',
-    alignSelf:'center',
-    fontWeight:'bold'
+    width: "50%",
+    alignSelf: "center",
+    fontWeight: "bold",
   },
 });
