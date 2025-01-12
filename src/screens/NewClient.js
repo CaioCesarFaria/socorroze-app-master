@@ -46,6 +46,20 @@ export default function NewClient() {
         domingo: { aberto: false, abertura: '08:00', fechamento: '18:00' },
     });
 
+    const diasFuncionamentoNumerico = Object.entries(diasFuncionamento).reduce((acc, [dia, dados]) => {
+        const diasMap = {
+            segunda: 1,
+            terca: 2,
+            quarta: 3,
+            quinta: 4,
+            sexta: 5,
+            sabado: 6,
+            domingo: 0
+        };
+        acc[diasMap[dia]] = dados; // Converte os dias para números
+        return acc;
+    }, {});
+
     // Definindo os horários
     const horarios = ['00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00'];
     // 4. Função para alternar a seleção de categoria
@@ -81,7 +95,7 @@ export default function NewClient() {
                 cpfResponsavel: cpfResponsavel,
                 categorias: categorias,
                 endereco: endereco,
-                diasFuncionamento: diasFuncionamento,
+                diasFuncionamento: diasFuncionamentoNumerico,
                 
             });
             // Armazena o ID do documento recém-criado

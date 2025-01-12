@@ -21,6 +21,9 @@ import app from "../firebase-config/firebasecofing";
 import { getAuth } from "firebase/auth";
 import { useNavigation } from "@react-navigation/native";
 import moment from "moment";
+import "moment/locale/pt-br";
+moment.locale("pt-br");
+
 import Ionicons from "@expo/vector-icons/Ionicons";
 
 export default function Home() {
@@ -79,16 +82,24 @@ export default function Home() {
 
   // Função para verificar se a mecânica está aberta
   const isMechanicOpen = (diasFuncionamento) => {
-    const diaAtual = moment().format("dddd").toLowerCase(); // Nome do dia em inglês
-    const horarioAtual = moment().format("HH:mm"); // Hora atual no formato 24h
+  const diaAtual = moment().format('dddd').toLowerCase();
+  const horarioAtual = moment().format('HH:mm');
+  const horarioHoje = diasFuncionamento[diaAtual];
 
-    if (diasFuncionamento[diaAtual]?.aberto) {
-      const { abertura, fechamento } = diasFuncionamento[diaAtual];
-      return horarioAtual >= abertura && horarioAtual <= fechamento;
-    }
+  if (!horarioHoje || !horarioHoje.aberto) {
     return false;
-    
-  };
+  }
+
+  const isBetween = (num, min, max) => num >= min && num <= max;
+  const [horaAtual, minutoAtual] = horarioAtual.split(':').map(Number);
+  const [horaAbertura, minutoAbertura] = horarioHoje.abertura.split(':').map(Number);
+  const [horaFechamento, minutoFechamento] = horarioHoje.fechamento.split(':').map(Number);
+
+  return isBetween(horaAtual, horaAbertura, horaFechamento) ||
+    (horaAtual === horaAbertura && minutoAtual >= minutoAbertura) ||
+    (horaAtual === horaFechamento && minutoAtual <= minutoFechamento);
+};
+  
 
   // Renderização da lista de mecânicas
   const renderItem = ({ item }) => {
@@ -106,9 +117,10 @@ export default function Home() {
             ]}
           />
           <Text style={styles.statusText}>{aberto ? "Aberto" : "Fechado"}</Text>
-        </View>
-        <Text style={styles.cardTitle}>{item.nomeFantasia}</Text>
+          <Text style={styles.cardTitle}>{item.nomeFantasia}</Text>
         <Text style={styles.cardSubtitle}>{item.cidade}</Text>
+        </View>
+        
         <TouchableOpacity
           style={styles.cardZap}
           onPress={() =>
@@ -132,7 +144,7 @@ export default function Home() {
   return (
     <SafeAreaView style={styles.container}>
       <ImageBackground
-        source={require("../../assets/bgfull.png")}
+        source={require("../../assets/bgwhite.png")}
         style={styles.bgImagem}
         resizeMode="cover"
       >
@@ -174,7 +186,7 @@ const styles = StyleSheet.create({
   },
   containerMecanicas: {
     flex: 1,
-    backgroundColor: "#C54343",
+    backgroundColor: "#F4B516",
     marginTop: 20,
     marginHorizontal: 20,
     borderRadius: 7,
@@ -189,7 +201,9 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
   card: {
-    backgroundColor: "#fff",
+    flexDirection:'row',
+    width:"90%",
+    backgroundColor: "#c9c9c9",
     borderRadius: 8,
     padding: 16,
     marginVertical: 8,
@@ -198,9 +212,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
+    alignSelf:'center'
   },
   cardTitle: {
-    fontSize: 18,
+    fontSize: 14,
     fontWeight: "bold",
     color: "#333",
   },
