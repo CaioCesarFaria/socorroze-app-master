@@ -10,6 +10,7 @@ import {
   Alert,
   ScrollView,
   ImageBackground,
+  Image,
   Button,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
