@@ -12,7 +12,9 @@ import {
   ImageBackground,
   Image,
   Linking,
-  ScrollView, // Para a barra de categorias
+  ScrollView,
+  Platform,
+  StatusBar,
 } from "react-native";
 import {
   getFirestore,
@@ -33,8 +35,8 @@ const calendarIcon = require("../../assets/icons/icon_calendar.png");
 
 /** Ajuste para cada categoria, apontando para seus ícones correspondentes. */
 const categoryIcons = {
-  Elétrica: require("../../assets/icons/icon_eletrica.png"),
   Mecânica: require("../../assets/icons/icon_mecanica.png"),
+  Elétrica: require("../../assets/icons/icon_eletrica.png"),
   Lanternagem: require("../../assets/icons/icon_lanternagem.png"),
   Guincho: require("../../assets/icons/icon_guincho.png"),
   Borracharia: require("../../assets/icons/icon_borracharia.png"),
@@ -66,7 +68,15 @@ export default function Home() {
 
   // Estado para armazenar qual categoria está selecionada
   const [selectedCategory, setSelectedCategory] = useState(null);
-
+  // Função de logout
+  const handleLogout = async () => {
+    try {
+      await auth.signOut();
+      navigation.replace("Login"); // redireciona para a tela de login
+    } catch (error) {
+      console.error("Erro ao fazer logout:", error);
+    }
+  };
   // 1. Buscar dados do usuário logado
   const fetchUsuario = async () => {
     try {
@@ -203,9 +213,7 @@ export default function Home() {
 
     // Filtra se houver categoria selecionada
     if (selectedCategory) {
-      result = result.filter((m) =>
-        m.categorias?.includes(selectedCategory)
-      );
+      result = result.filter((m) => m.categorias?.includes(selectedCategory));
     }
 
     // Ordena em ordem alfabética
@@ -258,11 +266,7 @@ export default function Home() {
                   />
                 )}
                 {item.atendeMoto && (
-                  <Ionicons
-                    name="bicycle-outline"
-                    size={20}
-                    color="#C54343"
-                  />
+                  <Ionicons name="bicycle-outline" size={20} color="#C54343" />
                 )}
               </View>
 
@@ -309,6 +313,11 @@ export default function Home() {
   // 5. Retorno principal
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar
+    barStyle="light-content"       
+    backgroundColor="#32345e"     
+         
+  />
       <ImageBackground
         source={require("../../assets/bgwhite.png")}
         style={styles.bgImagem}
@@ -316,12 +325,24 @@ export default function Home() {
       >
         {/* Saudação */}
         <View style={styles.headerContainer}>
+          {/* Ícone/botão de sair */}
+          
+            <TouchableOpacity
+              onPress={handleLogout}
+              style={styles.logoutButton}
+            >
+              <Ionicons name="exit-outline" size={28} color="#C54343" />
+              <Text style={styles.logoutButtonText}>Sair</Text>
+            </TouchableOpacity>
+          
           <Text style={styles.textSaudacao}>Olá, {nomeUsuario}!</Text>
         </View>
 
         {/* Barra de categorias */}
         <View style={styles.categoriesWrapper}>
-          <Text style={styles.filterTitle}>Busque por categoria de serviços</Text>
+          <Text style={styles.filterTitle}>
+            Busque por categoria de serviços
+          </Text>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -373,12 +394,27 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f5f5f5",
+    // Para Android, soma a altura da status bar. Para iOS, fica zero pois o SafeAreaView já resolve.
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
 
   /* HEADER */
   headerContainer: {
     paddingHorizontal: 20,
     paddingTop: 10,
+  },
+  
+  logoutButton: {
+    flexDirection:'row',
+    alignContent:'center',
+    alignItems:'center',
+    columnGap:6,
+    justifyContent:'flex-end',
+    marginBottom:10,
+  },
+  logoutButtonText: {
+    fontSize:14,
+    color:'#32345E'
   },
   textSaudacao: {
     color: "#32345E",
@@ -395,11 +431,16 @@ const styles = StyleSheet.create({
   filterTitle: {
     fontSize: 14,
     fontWeight: "bold",
-    marginBottom: 6,
+    marginBottom: 10,
+    marginTop: 10,
     color: "#32345E",
+    textAlign: "center",
   },
   categoriesContainer: {
-    paddingVertical: 6,
+    backgroundColor: "#fff",
+    borderColor: "#000",
+    borderRadius: 50,
+    paddingVertical: 8,
   },
   categoryItem: {
     alignItems: "center",
@@ -476,7 +517,7 @@ const styles = StyleSheet.create({
   coverImage: {
     width: "100%",
     height: "100%",
-    resizeMode: "contain", 
+    resizeMode: "contain",
   },
   infoContainer: {
     flex: 1,
