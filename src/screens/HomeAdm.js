@@ -50,19 +50,27 @@ export default function HomeAdm() {
             : "Você não está logado"}
         </Text>
         <View style={styles.containerMain}>
-        <TouchableOpacity
-          style={styles.btnNewClient}
-          onPress={() => navigation.navigate("NewClient")}
-        >
-          <Text style={styles.buttonText}>Cadastrar Novo Cliente</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.btnNewClient}
+            onPress={() => navigation.navigate("NewClient")}
+          >
+            <Text style={styles.buttonText}>Cadastrar Novo Cliente</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.btnHome}
-          onPress={() => navigation.navigate("Home")}
-        >
-          <Text style={styles.buttonText}>Ir para a Página Inicial</Text>
-        </TouchableOpacity>
+          {/* Novo botão para listagem */}
+          <TouchableOpacity
+            style={styles.btnListClient}
+            onPress={() => navigation.navigate("ListClient")}
+          >
+            <Text style={styles.buttonText}>Listar Mecânicas</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.btnHome}
+            onPress={() => navigation.navigate("Home")}
+          >
+            <Text style={styles.buttonText}>Ir para a Página Inicial</Text>
+          </TouchableOpacity>
         </View>
       </ImageBackground>
     </SafeAreaView>
@@ -77,7 +85,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    height:"100%",
+    height: "100%",
     justifyContent: "center",
     alignItems: "center",
 
@@ -90,11 +98,19 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   containerMain: {
-    flexDirection:'column',
-    alignItems:'center'
+    flexDirection: "column",
+    alignItems: "center",
   },
   btnNewClient: {
     backgroundColor: "#007BFF", // cor do botão
+    padding: 16,
+    borderRadius: 5,
+    width: "80%",
+    marginBottom: 20,
+    alignItems: "center",
+  },
+  btnListClient: {
+    backgroundColor: "#28a745", // Cor verde para diferenciar
     padding: 16,
     borderRadius: 5,
     width: "80%",

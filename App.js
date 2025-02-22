@@ -20,6 +20,8 @@ import TermosDePrivacidade from './src/screens/TermosDePrivacidade';
 import SplashScreen from './src/screens/Splash';
 import Details from './src/screens/Details';
 import EsqueciSenha from './src/screens/EsqueciSenha';
+import ListClient from './src/screens/ListClient';
+import UpdateClient from './src/screens/UpdateClient';
 
 
 
@@ -59,6 +61,8 @@ export default function App() {
         <Stack.Screen name='TermosDePrivacidade' component={TermosDePrivacidade}/>
         <Stack.Screen name='Details' options={{headerShown:false}} component={Details}/>
         <Stack.Screen name='EsqueciSenha' component={EsqueciSenha}/>
+        <Stack.Screen name="ListClient" component={ListClient} />
+<Stack.Screen name="UpdateClient" component={UpdateClient} />
       </Stack.Navigator>
     </NavigationContainer>
   );

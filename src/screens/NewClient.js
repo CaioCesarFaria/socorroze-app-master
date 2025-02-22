@@ -25,7 +25,7 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
 import * as ImagePicker from "expo-image-picker";
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from "expo-file-system";
 
 export default function NewClient() {
   const navigation = useNavigation();
@@ -36,12 +36,13 @@ export default function NewClient() {
   const [eh24Horas, setEh24Horas] = useState(false);
   const [responsavel, setResponsavel] = useState("");
   const [cpfResponsavel, setCpfResponsavel] = useState("");
+  const [telefone, setTelefone] = useState("");
   const [categorias, setCategorias] = useState([]);
   const [endereco, setEndereco] = useState("");
   const [documentId, setDocumentId] = useState("");
   const db = getFirestore(app);
   const [selectedImage, setSelectedImage] = useState(null);
-  
+
   const storage = getStorage(app);
 
   const categoriasPredefinidas = [
@@ -118,47 +119,47 @@ export default function NewClient() {
     );
   };
   // Função para abrir a galeria e fazer o upload da imagem
-const pickImage = async () => {
-  try {
-    const permissionResult =
-      await ImagePicker.requestMediaLibraryPermissionsAsync();
+  const pickImage = async () => {
+    try {
+      const permissionResult =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
 
-    if (!permissionResult.granted) {
-      Alert.alert(
-        "Permissão necessária",
-        "É necessário permitir o acesso à galeria para selecionar uma imagem."
-      );
-      return;
+      if (!permissionResult.granted) {
+        Alert.alert(
+          "Permissão necessária",
+          "É necessário permitir o acesso à galeria para selecionar uma imagem."
+        );
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ["images"],
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
+
+      if (!result.canceled) {
+        const imageUri = result.assets[0].uri;
+
+        // Upload da imagem para o Firebase Storage
+        const response = await fetch(imageUri);
+        const blob = await response.blob();
+        const imageRef = ref(storage, `images/${Date.now()}`); // Caminho no Storage
+        await uploadBytes(imageRef, blob);
+
+        // Obtenha a URL pública da imagem
+        const downloadURL = await getDownloadURL(imageRef);
+
+        // Atualize o estado
+        setSelectedImage(downloadURL);
+        Alert.alert("Sucesso!", "Imagem carregada com sucesso!");
+      }
+    } catch (error) {
+      console.error("Erro ao carregar a imagem:", error);
+      Alert.alert("Erro", "Não foi possível carregar a imagem.");
     }
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      const imageUri = result.assets[0].uri;
-
-      // Upload da imagem para o Firebase Storage
-      const response = await fetch(imageUri);
-      const blob = await response.blob();
-      const imageRef = ref(storage, `images/${Date.now()}`); // Caminho no Storage
-      await uploadBytes(imageRef, blob);
-
-      // Obtenha a URL pública da imagem
-      const downloadURL = await getDownloadURL(imageRef);
-
-      // Atualize o estado
-      setSelectedImage(downloadURL);
-      Alert.alert("Sucesso!", "Imagem carregada com sucesso!");
-    }
-  } catch (error) {
-    console.error("Erro ao carregar a imagem:", error);
-    Alert.alert("Erro", "Não foi possível carregar a imagem.");
-  }
-};
+  };
   // Função para alterar os horários de funcionamento
   const handleHorarioChange = (dia, tipo, valor) => {
     setDiasFuncionamento((prevState) => ({
@@ -181,10 +182,11 @@ const pickImage = async () => {
         eh24Horas: eh24Horas,
         responsavel: responsavel,
         cpfResponsavel: cpfResponsavel,
+        telefone:telefone,
         categorias: categorias,
         endereco: endereco,
         diasFuncionamento: diasFuncionamentoNumerico,
-        selectedImage: selectedImage, 
+        selectedImage: selectedImage,
       });
       // Armazena o ID do documento recém-criado
       await updateDoc(docRef, { id: docRef.id });
@@ -413,6 +415,15 @@ const pickImage = async () => {
             placeholder="CPF do responsável"
           />
 
+          {/* CAMPO PARA O TELEFONE QUE SERA USADO PRO WHATSAPP */}
+          <Text style={styles.label}>Telefone</Text>
+          <TextInput
+            style={styles.input}
+            value={telefone}
+            onChangeText={setTelefone}
+            placeholder="Telefone para contato"
+            keyboardType="phone-pad"
+          />
           {/* 7. Checkboxes para Categorias */}
           <Text style={styles.label}>Categorias</Text>
           {categoriasPredefinidas.map((categoria, index) => (
