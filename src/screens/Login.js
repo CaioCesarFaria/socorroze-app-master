@@ -1,3 +1,4 @@
+// Login.js 
 import React, { useState } from "react";
 import {
   SafeAreaView,
@@ -24,6 +25,7 @@ import {
 } from "firebase/auth";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { getFirestore, doc, getDoc } from "firebase/firestore";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -39,20 +41,36 @@ export default function Login() {
 
     const auth = getAuth();
     try {
+      // Define o modo de persistência
       const persistenceMode = keepLoggedIn
         ? browserLocalPersistence
         : browserSessionPersistence;
+
+      // Realiza o login
       const userCredential = await signInWithEmailAndPassword(
         auth,
         email,
         password
       );
-      const isAdmin =
-        userCredential.user.uid === "9izwMEqZtJcvkS0tCyGuF7xAC8t1";
-      if (isAdmin || userData.role === "admin") {
-        navigation.navigate("HomeAdm", { isAdmin });
-        Alert.alert("Bem-vindo Administrador");
+
+      // Após o login, busca os dados do usuário no Firestore
+      const db = getFirestore();
+      const userRef = doc(db, "usuarios", userCredential.user.uid);
+      const userSnap = await getDoc(userRef);
+
+      if (userSnap.exists()) {
+        const userData = userSnap.data();
+
+        // Se o usuário for admin ou master, redireciona para a HomeAdm
+        if (userData.role === "admin" || userData.role === "master") {
+          navigation.navigate("HomeAdm", { isAdmin: true });
+          Alert.alert("Bem-vindo Administrador");
+        } else {
+          // Se for usuário comum, vai para a Home
+          navigation.replace("Home");
+        }
       } else {
+        // Se não encontrar o documento, você pode optar por tratar como usuário comum
         navigation.replace("Home");
       }
     } catch (error) {
@@ -73,7 +91,7 @@ export default function Login() {
       <KeyboardAvoidingView
         style={{ flex: 1, width: "100%" }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 80} // ajuste esse valor se necessário
+        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 80}
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <ScrollView
@@ -233,4 +251,5 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
+
 

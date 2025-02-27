@@ -129,7 +129,7 @@ export default function UpdateClient({ route }) {
       }
 
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ImagePicker.mediaTypes.Images,
         allowsEditing: true,
         aspect: [4, 3],
         quality: 1,

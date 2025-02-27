@@ -71,6 +71,7 @@ export default function Cadastro() {
         nome: nome,
         telefone: telefone,
         email: email,
+        role: "user",
       });
 
       console.log("Informações do usuário salvas no Firestore");

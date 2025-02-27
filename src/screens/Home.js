@@ -123,7 +123,8 @@ export default function Home() {
     fetchMecanicas();
   }, []);
 
-  const isMechanicOpen = (diasFuncionamento) => {
+  const isMechanicOpen = (diasFuncionamento, eh24Horas) => {
+    if (eh24Horas) return true; // Se for 24h, sempre retorna true
     if (!diasFuncionamento) return false;
     const currentDay = moment().day();
     const currentTimeStr = moment().format("HH:mm");
@@ -191,7 +192,7 @@ export default function Home() {
   };
 
   const renderItem = ({ item }) => {
-    const aberto = isMechanicOpen(item.diasFuncionamento);
+    const aberto = isMechanicOpen(item.diasFuncionamento, item.eh24Horas);
     const scheduleText = getScheduleText(item.diasFuncionamento);
 
     let distance = null;
@@ -248,7 +249,7 @@ export default function Home() {
                 <View
                   style={[
                     styles.statusCircle,
-                    { backgroundColor: aberto ? "green" : "red" },
+                    { backgroundColor: aberto || eh24Horas ? "green" : "red" },
                   ]}
                 />
                 <Text style={styles.statusText}>
