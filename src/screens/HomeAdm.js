@@ -65,12 +65,15 @@ export default function HomeAdm() {
           >
             <Text style={styles.buttonText}>Mecânicas</Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.adminButton}
-            onPress={() => navigation.navigate("AdminUsers")}
-          >
-            <Text style={styles.buttonText}>CRIAR ADMINISTRADOR</Text>
-          </TouchableOpacity>
+          {userData && userData.role === "master" && (
+            <TouchableOpacity
+              style={styles.adminButton}
+              onPress={() => navigation.navigate("AdminUsers")}
+            >
+              <Text style={styles.buttonText}>CRIAR ADMINISTRADOR</Text>
+            </TouchableOpacity>
+          )}
+
           <TouchableOpacity
             style={styles.btnHome}
             onPress={() => navigation.navigate("Home")}
@@ -94,7 +97,6 @@ const styles = StyleSheet.create({
     height: "100%",
     justifyContent: "center",
     alignItems: "center",
-    
   },
   welcomeText: {
     fontSize: 20,
@@ -105,13 +107,13 @@ const styles = StyleSheet.create({
   containerMain: {
     flexDirection: "column",
     alignItems: "center",
-    rowGap:20,
+    rowGap: 20,
   },
   btnNewClient: {
     backgroundColor: "#007BFF", // cor do botão
-    paddingVertical:10,
+    paddingVertical: 10,
     borderRadius: 5,
-    minWidth: '70%',
+    minWidth: "70%",
     borderRadius: 8,
     alignItems: "center",
   },
@@ -119,16 +121,16 @@ const styles = StyleSheet.create({
     backgroundColor: "#32345E", // Cor verde para diferenciar
     padding: 16,
     borderRadius: 5,
-    minWidth: '70%',
-    paddingVertical:10,
+    minWidth: "70%",
+    paddingVertical: 10,
     alignItems: "center",
     borderRadius: 8,
   },
   btnHome: {
     backgroundColor: "#53A9C5",
-    paddingVertical:10,
+    paddingVertical: 10,
     borderRadius: 5,
-    minWidth: '70%',
+    minWidth: "70%",
     marginBottom: 20,
     alignItems: "center",
     borderRadius: 8,
@@ -137,16 +139,15 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 16,
     fontWeight: "bold",
-    textAlign:'center',
-    textTransform:'uppercase'
+    textAlign: "center",
+    textTransform: "uppercase",
   },
   adminButton: {
-    backgroundColor: '#C54343',
-    paddingVertical:10,
+    backgroundColor: "#C54343",
+    paddingVertical: 10,
     borderRadius: 8,
-    
-    minWidth: '70%',
-    alignSelf: 'center',
-    
+
+    minWidth: "70%",
+    alignSelf: "center",
   },
 });

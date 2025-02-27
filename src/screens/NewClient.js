@@ -24,7 +24,7 @@ import {
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
-
+import { getAuth } from "firebase/auth";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
 
@@ -44,7 +44,8 @@ export default function NewClient() {
   const db = getFirestore(app);
   const [selectedImage, setSelectedImage] = useState(null);
   const [mapsLink, setMapsLink] = useState("");
-
+  const auth = getAuth();
+  const ownerId = auth.currentUser.uid;
   const storage = getStorage(app);
 
   const categoriasPredefinidas = [
@@ -194,6 +195,13 @@ export default function NewClient() {
   // Função para enviar dados ao Firestore
   const handleNewClient = async () => {
     try {
+      const auth = getAuth(); // 👈 Obtenha a instância de autenticação
+      const user = auth.currentUser;
+
+      if (!user) {
+        Alert.alert("Erro", "Usuário não autenticado!");
+        return;
+      }
       const coords = extractCoordinates(mapsLink);
 
       if (!coords) {
@@ -217,6 +225,7 @@ export default function NewClient() {
         longitude: coords.longitude,
         diasFuncionamento: diasFuncionamentoNumerico,
         selectedImage: selectedImage,
+        ownerId: user.uid,
       });
       // Armazena o ID do documento recém-criado
       await updateDoc(docRef, { id: docRef.id });

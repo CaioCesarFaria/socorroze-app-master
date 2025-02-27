@@ -1,19 +1,32 @@
 import React, { useState, useEffect } from "react";
-import { 
-    SafeAreaView,
-    StyleSheet,
-    Text,
-    View,
-    TextInput,
-    TouchableOpacity,
-    Alert,
-    ScrollView,
-    Image,
-    Button,
+import {
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  View,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+  ScrollView,
+  Image,
+  Button,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
-import { getFirestore, doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
-import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  updateDoc,
+  deleteDoc,
+} from "firebase/firestore";
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  deleteObject,
+} from "firebase/storage";
+import { getAuth } from "firebase/auth";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
 import * as ImagePicker from "expo-image-picker";
@@ -59,9 +72,30 @@ export default function UpdateClient({ route }) {
 
   // Definindo os horários
   const horarios = [
-    "00:00", "01:00", "02:00", "03:00", "04:00", "05:00", "06:00", "07:00",
-    "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00",
-    "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"
+    "00:00",
+    "01:00",
+    "02:00",
+    "03:00",
+    "04:00",
+    "05:00",
+    "06:00",
+    "07:00",
+    "08:00",
+    "09:00",
+    "10:00",
+    "11:00",
+    "12:00",
+    "13:00",
+    "14:00",
+    "15:00",
+    "16:00",
+    "17:00",
+    "18:00",
+    "19:00",
+    "20:00",
+    "21:00",
+    "22:00",
+    "23:00",
   ];
 
   // Função para extrair coordenadas do link
@@ -69,7 +103,7 @@ export default function UpdateClient({ route }) {
     const formats = [
       /@(-?\d+\.\d+),(-?\d+\.\d+)/,
       /!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/,
-      /lat=(-?\d+\.\d+)&lng=(-?\d+\.\d+)/
+      /lat=(-?\d+\.\d+)&lng=(-?\d+\.\d+)/,
     ];
 
     for (const regex of formats) {
@@ -77,7 +111,7 @@ export default function UpdateClient({ route }) {
       if (match && match.length >= 3) {
         return {
           latitude: parseFloat(match[1]),
-          longitude: parseFloat(match[2])
+          longitude: parseFloat(match[2]),
         };
       }
     }
@@ -104,13 +138,18 @@ export default function UpdateClient({ route }) {
         setTelefone(data.telefone);
         setSelectedImage(data.selectedImage);
         setMapsLink(data.mapsLink || "");
-        
+
         // Converter dias numéricos para formato de texto
         const diasConvertidos = {};
         Object.entries(data.diasFuncionamento).forEach(([diaNum, dados]) => {
           const diasMap = {
-            0: "domingo", 1: "segunda", 2: "terca", 3: "quarta",
-            4: "quinta", 5: "sexta", 6: "sabado"
+            0: "domingo",
+            1: "segunda",
+            2: "terca",
+            3: "quarta",
+            4: "quinta",
+            5: "sexta",
+            6: "sabado",
           };
           diasConvertidos[diasMap[diaNum]] = dados;
         });
@@ -122,7 +161,8 @@ export default function UpdateClient({ route }) {
 
   const pickImage = async () => {
     try {
-      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      const permissionResult =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (!permissionResult.granted) {
         Alert.alert("Permissão necessária", "Permita acesso à galeria!");
         return;
@@ -150,38 +190,53 @@ export default function UpdateClient({ route }) {
   };
 
   const toggleCategoria = (categoria) => {
-    setCategorias(prev => 
-      prev.includes(categoria) 
-        ? prev.filter(c => c !== categoria) 
+    setCategorias((prev) =>
+      prev.includes(categoria)
+        ? prev.filter((c) => c !== categoria)
         : [...prev, categoria]
     );
   };
 
   const handleHorarioChange = (dia, tipo, valor) => {
-    setDiasFuncionamento(prev => ({
+    setDiasFuncionamento((prev) => ({
       ...prev,
-      [dia]: { ...prev[dia], [tipo]: valor }
+      [dia]: { ...prev[dia], [tipo]: valor },
     }));
   };
 
   const handleUpdate = async () => {
     try {
+      const auth = getAuth();
+      const user = auth.currentUser;
+
+      if (!user) {
+        Alert.alert("Erro", "Usuário não autenticado!");
+        return;
+      }
       const coords = extractCoordinates(mapsLink);
-      
+
       if (!coords) {
         Alert.alert("Erro", "Link do Google Maps inválido!");
         return;
       }
 
       // Converter dias para formato numérico
-      const diasNumericos = Object.entries(diasFuncionamento).reduce((acc, [dia, dados]) => {
-        const diasMap = {
-          segunda: 1, terca: 2, quarta: 3, quinta: 4,
-          sexta: 5, sabado: 6, domingo: 0
-        };
-        acc[diasMap[dia]] = dados;
-        return acc;
-      }, {});
+      const diasNumericos = Object.entries(diasFuncionamento).reduce(
+        (acc, [dia, dados]) => {
+          const diasMap = {
+            segunda: 1,
+            terca: 2,
+            quarta: 3,
+            quinta: 4,
+            sexta: 5,
+            sabado: 6,
+            domingo: 0,
+          };
+          acc[diasMap[dia]] = dados;
+          return acc;
+        },
+        {}
+      );
 
       await updateDoc(doc(db, "mecanicas", mecanicaId), {
         cidade,
@@ -198,9 +253,10 @@ export default function UpdateClient({ route }) {
         mapsLink,
         latitude: coords.latitude,
         longitude: coords.longitude,
-        diasFuncionamento: diasNumericos
+        diasFuncionamento: diasNumericos,
+        ownerId: user.uid,
       });
-      
+
       Alert.alert("Sucesso!", "Dados atualizados!");
       navigation.goBack();
     } catch (error) {
@@ -214,7 +270,7 @@ export default function UpdateClient({ route }) {
         const imageRef = ref(storage, selectedImage);
         await deleteObject(imageRef);
       }
-      
+
       await deleteDoc(doc(db, "mecanicas", mecanicaId));
       Alert.alert("Sucesso!", "Mecânica excluída!");
       navigation.navigate("ListClient");
@@ -356,12 +412,20 @@ export default function UpdateClient({ route }) {
               <View key={dia} style={styles.diaContainer}>
                 <TouchableOpacity
                   onPress={() =>
-                    handleHorarioChange(dia, "aberto", !diasFuncionamento[dia].aberto)
+                    handleHorarioChange(
+                      dia,
+                      "aberto",
+                      !diasFuncionamento[dia].aberto
+                    )
                   }
                   style={styles.checkboxOption}
                 >
                   <Icon
-                    name={diasFuncionamento[dia].aberto ? "checkbox" : "square-outline"}
+                    name={
+                      diasFuncionamento[dia].aberto
+                        ? "checkbox"
+                        : "square-outline"
+                    }
                     size={20}
                     color="#007bff"
                   />
@@ -436,10 +500,12 @@ export default function UpdateClient({ route }) {
               onPress={() => toggleCategoria(categoria)}
               style={[
                 styles.categoriaButton,
-                categorias.includes(categoria) && styles.categoriaSelected
+                categorias.includes(categoria) && styles.categoriaSelected,
               ]}
             >
-              <Text style={categorias.includes(categoria) && styles.categoriaText}>
+              <Text
+                style={categorias.includes(categoria) && styles.categoriaText}
+              >
                 {categoria}
               </Text>
             </TouchableOpacity>
@@ -488,24 +554,24 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginVertical: 20,
-    textAlign: 'center',
+    textAlign: "center",
   },
   label: {
     fontSize: 16,
     marginVertical: 8,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     padding: 12,
     marginBottom: 15,
     borderRadius: 8,
   },
   picker: {
-    backgroundColor: '#f0f0f0',
+    backgroundColor: "#f0f0f0",
     marginBottom: 15,
     borderRadius: 8,
   },
@@ -513,75 +579,75 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     borderRadius: 10,
-    alignSelf: 'center',
+    alignSelf: "center",
     margin: 10,
   },
   button: {
-    backgroundColor: '#007bff',
+    backgroundColor: "#007bff",
     padding: 15,
     borderRadius: 8,
     marginVertical: 10,
-    alignItems: 'center',
+    alignItems: "center",
   },
   deleteButton: {
-    backgroundColor: '#dc3545',
+    backgroundColor: "#dc3545",
     padding: 15,
     borderRadius: 8,
     marginVertical: 10,
-    alignItems: 'center',
+    alignItems: "center",
   },
   buttonText: {
-    color: 'white',
-    fontWeight: 'bold',
+    color: "white",
+    fontWeight: "bold",
   },
   checkboxContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    flexDirection: "row",
+    justifyContent: "space-around",
     marginBottom: 16,
   },
   checkboxOption: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
     marginVertical: 8,
   },
   diaContainer: {
     marginBottom: 15,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: "#f8f9fa",
     padding: 10,
     borderRadius: 8,
   },
   horarioContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginTop: 10,
   },
   horarioPickerContainer: {
-    width: '48%',
+    width: "48%",
   },
   timePicker: {
     height: 120,
-    width: '100%',
+    width: "100%",
   },
   categoriasContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     gap: 8,
     marginBottom: 16,
   },
   categoriaButton: {
     padding: 10,
     borderWidth: 1,
-    borderColor: '#007bff',
+    borderColor: "#007bff",
     borderRadius: 20,
   },
   categoriaSelected: {
-    backgroundColor: '#007bff',
+    backgroundColor: "#007bff",
   },
   categoriaText: {
-    color: 'white',
+    color: "white",
   },
   diaText: {
-    fontWeight: '500',
+    fontWeight: "500",
   },
 });

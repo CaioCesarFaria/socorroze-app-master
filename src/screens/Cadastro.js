@@ -40,6 +40,7 @@ export default function Cadastro() {
   const navigation = useNavigation();
   const auth = getAuth(app);
   const db = getFirestore(app);
+  
 
   const handleCadastro = async () => {
     if (!termosAceitos) {
