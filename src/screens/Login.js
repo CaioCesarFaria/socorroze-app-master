@@ -49,7 +49,7 @@ export default function Login() {
       );
       const isAdmin =
         userCredential.user.uid === "9izwMEqZtJcvkS0tCyGuF7xAC8t1";
-      if (isAdmin) {
+      if (isAdmin || userData.role === "admin") {
         navigation.navigate("HomeAdm", { isAdmin });
         Alert.alert("Bem-vindo Administrador");
       } else {

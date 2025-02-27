@@ -1,5 +1,4 @@
 // Home.js
-// Home.js
 import React, { useEffect, useState, useMemo } from "react";
 import {
   SafeAreaView,
@@ -29,11 +28,11 @@ import { useNavigation } from "@react-navigation/native";
 import moment from "moment";
 import "moment/locale/pt-br";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import Entypo from '@expo/vector-icons/Entypo';
+import * as Location from "expo-location";
+import { haversineDistance } from "../utils/geoUtils";
 
-// Ícone de calendário (você já usava)
 const calendarIcon = require("../../assets/icons/icon_calendar.png");
-
-/** Ajuste para cada categoria, apontando para seus ícones correspondentes. */
 const categoryIcons = {
   Mecânica: require("../../assets/icons/icon_mecanica.png"),
   Elétrica: require("../../assets/icons/icon_eletrica.png"),
@@ -43,8 +42,6 @@ const categoryIcons = {
   Pintura: require("../../assets/icons/icon_pintura.png"),
   Revisão: require("../../assets/icons/icon_revisao.png"),
 };
-
-/** Suas categorias */
 const categoriasPredefinidas = [
   "Borracharia",
   "Mecânica",
@@ -65,19 +62,19 @@ export default function Home() {
   const [nomeUsuario, setNomeUsuario] = useState("");
   const [mecanicas, setMecanicas] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  // Estado para armazenar qual categoria está selecionada
   const [selectedCategory, setSelectedCategory] = useState(null);
-  // Função de logout
+  const [userLocation, setUserLocation] = useState(null);
+  const [locationError, setLocationError] = useState(null);
+
   const handleLogout = async () => {
     try {
       await auth.signOut();
-      navigation.replace("Login"); // redireciona para a tela de login
+      navigation.replace("Login");
     } catch (error) {
       console.error("Erro ao fazer logout:", error);
     }
   };
-  // 1. Buscar dados do usuário logado
+
   const fetchUsuario = async () => {
     try {
       const user = auth.currentUser;
@@ -85,11 +82,7 @@ export default function Home() {
         const userDoc = await getDoc(doc(db, "usuarios", user.uid));
         if (userDoc.exists()) {
           setNomeUsuario(userDoc.data().nome);
-        } else {
-          console.warn("Usuário não encontrado no Firestore.");
         }
-      } else {
-        console.warn("Nenhum usuário está logado.");
       }
     } catch (error) {
       console.error("Erro ao buscar dados do usuário:", error);
@@ -98,7 +91,6 @@ export default function Home() {
     }
   };
 
-  // 2. Buscar as mecânicas do Firestore
   const fetchMecanicas = async () => {
     try {
       const querySnapshot = await getDocs(collection(db, "mecanicas"));
@@ -114,129 +106,110 @@ export default function Home() {
     }
   };
 
+  const getLocation = async () => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      setLocationError("Permissão de localização negada");
+      return;
+    }
+
+    let location = await Location.getCurrentPositionAsync({});
+    setUserLocation(location.coords);
+  };
+
   useEffect(() => {
+    getLocation();
     fetchUsuario();
     fetchMecanicas();
   }, []);
 
-  /**
-   * Verifica se a mecânica está aberta AGORA (para mostrar "Aberto"/"Fechado").
-   */
   const isMechanicOpen = (diasFuncionamento) => {
     if (!diasFuncionamento) return false;
-
-    const currentDay = moment().day(); // 0=Dom, 1=Seg, ...
+    const currentDay = moment().day();
     const currentTimeStr = moment().format("HH:mm");
     const format = "HH:mm";
 
     const dayData = diasFuncionamento[currentDay];
-    if (!dayData || !dayData.aberto) {
-      return false;
-    }
+    if (!dayData || !dayData.aberto) return false;
 
     const now = moment(currentTimeStr, format);
     const start = moment(dayData.abertura, format);
     const end = moment(dayData.fechamento, format);
-
     return now.isBetween(start, end, null, "[]");
   };
 
-  /**
-   * Gera o texto do calendário conforme as regras que você definiu antes.
-   * (Mantive sua lógica, mas pode simplificar se quiser.)
-   */
   const getScheduleText = (diasFuncionamento) => {
     if (!diasFuncionamento) return "";
-
-    // Lista dos dias abertos (0=Dom, 1=Seg, ...)
     const openDays = [];
     for (let i = 0; i < 7; i++) {
-      if (diasFuncionamento[i]?.aberto) {
-        openDays.push(i);
-      }
+      if (diasFuncionamento[i]?.aberto) openDays.push(i);
     }
 
-    // Descobrir o dia de hoje e dados de hoje
     const today = moment().day();
     const todayData = diasFuncionamento[today];
-
-    // Checar se abre TODOS os dias (0..6)
     if (openDays.length === 7) {
-      if (todayData?.aberto) {
-        return `Aberto todos os dias: ${todayData.abertura} - ${todayData.fechamento}`;
-      } else {
-        return `Aberto todos os dias (Hoje fechado)`;
-      }
+      return todayData?.aberto
+        ? `Aberto todos os dias: ${todayData.abertura} - ${todayData.fechamento}`
+        : "Aberto todos os dias (Hoje fechado)";
     }
 
-    // Se abre de segunda(1) a sexta(5)
-    const monToFri = [1, 2, 3, 4, 5];
-    // Se abre de segunda(1) a sábado(6)
-    const monToSat = [1, 2, 3, 4, 5, 6];
-
     const isMonFri =
-      monToFri.every((d) => openDays.includes(d)) && openDays.length === 5;
+      [1, 2, 3, 4, 5].every((d) => openDays.includes(d)) &&
+      openDays.length === 5;
     const isMonSat =
-      monToSat.every((d) => openDays.includes(d)) && openDays.length === 6;
+      [1, 2, 3, 4, 5, 6].every((d) => openDays.includes(d)) &&
+      openDays.length === 6;
 
     if (isMonSat) {
-      // "Seg-Sáb"
-      if (todayData?.aberto) {
-        return `Seg-Sáb: ${todayData.abertura} - ${todayData.fechamento}`;
-      } else {
-        return `Seg-Sáb (Hoje fechado)`;
-      }
+      return todayData?.aberto
+        ? `Seg-Sáb: ${todayData.abertura} - ${todayData.fechamento}`
+        : "Seg-Sáb (Hoje fechado)";
     } else if (isMonFri) {
-      // "Seg-Sex"
-      if (todayData?.aberto) {
-        return `Seg-Sex: ${todayData.abertura} - ${todayData.fechamento}`;
-      } else {
-        return `Seg-Sex (Hoje fechado)`;
-      }
+      return todayData?.aberto
+        ? `Seg-Sex: ${todayData.abertura} - ${todayData.fechamento}`
+        : "Seg-Sex (Hoje fechado)";
     } else {
-      // Caso não caia em nenhum dos cenários acima, exibir "Hoje:..."
-      if (todayData?.aberto) {
-        return `Hoje: ${todayData.abertura} - ${todayData.fechamento}`;
-      } else {
-        return "Hoje fechado";
-      }
+      return todayData?.aberto
+        ? `Hoje: ${todayData.abertura} - ${todayData.fechamento}`
+        : "Hoje fechado";
     }
   };
 
-  /**
-   * Lista de mecânicas filtrada (se `selectedCategory` != null)
-   * e ordenada por nomeFantasia (ordem alfabética).
-   */
   const displayedMecanicas = useMemo(() => {
-    // Copia do array original
     let result = [...mecanicas];
-
-    // Filtra se houver categoria selecionada
     if (selectedCategory) {
       result = result.filter((m) => m.categorias?.includes(selectedCategory));
     }
-
-    // Ordena em ordem alfabética
-    result.sort((a, b) => {
-      return a.nomeFantasia.localeCompare(b.nomeFantasia);
-    });
-
+    result.sort((a, b) => a.nomeFantasia.localeCompare(b.nomeFantasia));
     return result;
   }, [mecanicas, selectedCategory]);
 
-  // Renderização da lista de mecânicas
+  const formatDistance = (distance) => {
+    if (!distance) return "---";
+    if (distance < 1000) return `${Math.round(distance)}m`;
+    return `${(distance / 1000).toFixed(1).replace(".", ",")}km`;
+  };
+
   const renderItem = ({ item }) => {
     const aberto = isMechanicOpen(item.diasFuncionamento);
     const scheduleText = getScheduleText(item.diasFuncionamento);
+
+    let distance = null;
+    if (userLocation && item.latitude && item.longitude) {
+      distance = haversineDistance(
+        userLocation.latitude,
+        userLocation.longitude,
+        item.latitude,
+        item.longitude
+      );
+    }
 
     return (
       <TouchableOpacity
         style={styles.card}
         onPress={() => navigation.navigate("Details", { id: item.id })}
       >
-        {/* PARTE ESQUERDA */}
         <View style={styles.leftContainer}>
-          {/* Imagem circular com borda */}
           <View style={styles.imageContainer}>
             <Image
               source={{ uri: item.selectedImage }}
@@ -244,17 +217,13 @@ export default function Home() {
             />
           </View>
 
-          {/* Informações da mecânica */}
           <View style={styles.infoContainer}>
             <Text style={styles.cardTitle}>{item.nomeFantasia}</Text>
-
-            {/* Linha do Calendário + Horário Customizado */}
             <View style={styles.calendarContainer}>
               <Image source={calendarIcon} style={styles.calendarIcon} />
               <Text style={styles.scheduleText}>{scheduleText}</Text>
             </View>
 
-            {/* Ícones Carro e Moto em vermelho */}
             <View style={styles.mainRow}>
               <View style={styles.iconRow}>
                 {item.atendeCarro && (
@@ -269,8 +238,12 @@ export default function Home() {
                   <Ionicons name="bicycle-outline" size={20} color="#C54343" />
                 )}
               </View>
-
-              {/* Status (Aberto/Fechado) */}
+              <View style={styles.distanceRow}>
+              <Entypo name="location-pin" size={20} color="green" />
+                <Text style={styles.distanceText}>
+                  {formatDistance(distance)}
+                </Text>
+              </View>
               <View style={styles.statusRow}>
                 <View
                   style={[
@@ -286,12 +259,11 @@ export default function Home() {
           </View>
         </View>
 
-        {/* PARTE DIREITA (Botão WhatsApp) */}
         <TouchableOpacity
           style={styles.whatsappContainer}
           onPress={() => {
-            if (item.telefoneResponsavel) {
-              Linking.openURL(`https://wa.me/${item.telefoneResponsavel}`);
+            if (item.telefone) {
+              Linking.openURL(`https://wa.me/${item.telefone}`);
             }
           }}
         >
@@ -301,7 +273,6 @@ export default function Home() {
     );
   };
 
-  // 4. Loading
   if (loading) {
     return (
       <SafeAreaView style={styles.container}>
@@ -310,35 +281,22 @@ export default function Home() {
     );
   }
 
-  // 5. Retorno principal
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar
-    barStyle="light-content"       
-    backgroundColor="#32345e"     
-         
-  />
+      <StatusBar barStyle="light-content" backgroundColor="#32345e" />
       <ImageBackground
         source={require("../../assets/bgwhite.png")}
         style={styles.bgImagem}
         resizeMode="cover"
       >
-        {/* Saudação */}
         <View style={styles.headerContainer}>
-          {/* Ícone/botão de sair */}
-          
-            <TouchableOpacity
-              onPress={handleLogout}
-              style={styles.logoutButton}
-            >
-              <Ionicons name="exit-outline" size={28} color="#C54343" />
-              <Text style={styles.logoutButtonText}>Sair</Text>
-            </TouchableOpacity>
-          
+          <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
+            <Ionicons name="exit-outline" size={28} color="#C54343" />
+            <Text style={styles.logoutButtonText}>Sair</Text>
+          </TouchableOpacity>
           <Text style={styles.textSaudacao}>Olá, {nomeUsuario}!</Text>
         </View>
 
-        {/* Barra de categorias */}
         <View style={styles.categoriesWrapper}>
           <Text style={styles.filterTitle}>
             Busque por categoria de serviços
@@ -369,7 +327,6 @@ export default function Home() {
           )}
         </View>
 
-        {/* Lista de Mecânicas (filtrada) */}
         <View style={styles.containerMecanicas}>
           <Text style={styles.title}>Mecânicas Cadastradas</Text>
           <FlatList
@@ -384,7 +341,6 @@ export default function Home() {
   );
 }
 
-// ====================== ESTILOS ======================
 const styles = StyleSheet.create({
   bgImagem: {
     flex: 1,
@@ -394,35 +350,28 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f5f5f5",
-    // Para Android, soma a altura da status bar. Para iOS, fica zero pois o SafeAreaView já resolve.
     paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
-
-  /* HEADER */
   headerContainer: {
     paddingHorizontal: 20,
     paddingTop: 10,
   },
-  
   logoutButton: {
-    flexDirection:'row',
-    alignContent:'center',
-    alignItems:'center',
-    columnGap:6,
-    justifyContent:'flex-end',
-    marginBottom:10,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    marginBottom: 10,
+    gap: 6,
   },
   logoutButtonText: {
-    fontSize:14,
-    color:'#32345E'
+    fontSize: 14,
+    color: "#32345E",
   },
   textSaudacao: {
     color: "#32345E",
     fontSize: 18,
     fontWeight: "bold",
   },
-
-  /* BARRA DE CATEGORIAS */
   categoriesWrapper: {
     marginTop: 10,
     marginBottom: 10,
@@ -438,7 +387,6 @@ const styles = StyleSheet.create({
   },
   categoriesContainer: {
     backgroundColor: "#fff",
-    borderColor: "#000",
     borderRadius: 50,
     paddingVertical: 8,
   },
@@ -450,8 +398,7 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     marginBottom: 4,
-    borderRadius: 25, // se quiser icones circulares
-    // resizeMode: "contain", // se precisar
+    borderRadius: 25,
   },
   categoryText: {
     fontSize: 12,
@@ -463,8 +410,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#C54343",
   },
-
-  /* LISTA DE MECÂNICAS */
   containerMecanicas: {
     flex: 1,
     backgroundColor: "#F4B516",
@@ -482,15 +427,12 @@ const styles = StyleSheet.create({
   list: {
     paddingBottom: 16,
   },
-
-  /* CARD */
   card: {
     flexDirection: "row",
     backgroundColor: "#fff",
     borderRadius: 24,
     marginVertical: 8,
     marginHorizontal: 10,
-    // Sombra
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -552,6 +494,17 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
+  distanceRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingRight:5,
+    
+  },
+  distanceText: {
+    color: "black",
+    fontSize: 12,
+    fontWeight: "500",
+  },
   statusRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -566,11 +519,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#666",
   },
-
-  /* BOTÃO WHATSAPP */
   whatsappContainer: {
-    width: 60,
-    backgroundColor: "#25D366", // Cor típica do WhatsApp
+    width: 50,
+    backgroundColor: "#25D366",
     justifyContent: "center",
     alignItems: "center",
   },

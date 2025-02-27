@@ -24,6 +24,7 @@ import {
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
+
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
 
@@ -42,6 +43,7 @@ export default function NewClient() {
   const [documentId, setDocumentId] = useState("");
   const db = getFirestore(app);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [mapsLink, setMapsLink] = useState("");
 
   const storage = getStorage(app);
 
@@ -54,6 +56,25 @@ export default function NewClient() {
     "Pintura",
     "Revisão",
   ];
+  // Função para extrair coordenadas do link:
+  const extractCoordinates = (url) => {
+    const formats = [
+      /@(-?\d+\.\d+),(-?\d+\.\d+)/, // Formato padrão @lat,lng
+      /!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/, // Formato alternativo !3dlat!4dlng
+      /lat=(-?\d+\.\d+)&lng=(-?\d+\.\d+)/, // Formato de URL alternativa
+    ];
+
+    for (const regex of formats) {
+      const match = url.match(regex);
+      if (match && match.length >= 3) {
+        return {
+          latitude: parseFloat(match[1]),
+          longitude: parseFloat(match[2]),
+        };
+      }
+    }
+    return null;
+  };
 
   // Estado para armazenar os dias de funcionamento
   const [diasFuncionamento, setDiasFuncionamento] = useState({
@@ -173,6 +194,12 @@ export default function NewClient() {
   // Função para enviar dados ao Firestore
   const handleNewClient = async () => {
     try {
+      const coords = extractCoordinates(mapsLink);
+
+      if (!coords) {
+        Alert.alert("Erro", "Link do Google Maps inválido!");
+        return;
+      }
       // Adiciona um novo documento com os dados da mecânica
       const docRef = await addDoc(collection(db, "mecanicas"), {
         cidade: cidade,
@@ -182,9 +209,12 @@ export default function NewClient() {
         eh24Horas: eh24Horas,
         responsavel: responsavel,
         cpfResponsavel: cpfResponsavel,
-        telefone:telefone,
+        telefone: telefone,
         categorias: categorias,
         endereco: endereco,
+        mapsLink,
+        latitude: coords.latitude,
+        longitude: coords.longitude,
         diasFuncionamento: diasFuncionamentoNumerico,
         selectedImage: selectedImage,
       });
@@ -226,7 +256,6 @@ export default function NewClient() {
       >
         <ScrollView style={styles.scrolista}>
           <Text style={styles.title}>Cadastrar Nova Mecânica</Text>
-
           {/* Cidade */}
           <Text style={styles.label}>Cidade</Text>
           <Picker
@@ -241,7 +270,6 @@ export default function NewClient() {
             <Picker.Item label="Rio de Janeiro" value="Rio de Janeiro" />
             <Picker.Item label="Goiânia" value="Goiânia" />
           </Picker>
-
           <Text style={styles.label}>Nome</Text>
           <TextInput
             style={styles.input}
@@ -254,7 +282,6 @@ export default function NewClient() {
           {selectedImage && (
             <Image source={{ uri: selectedImage }} style={styles.image} />
           )}
-
           <Text style={styles.label}>Atende Moto?</Text>
           <View style={styles.checkboxContainer}>
             <TouchableOpacity
@@ -280,7 +307,6 @@ export default function NewClient() {
               <Text>Não</Text>
             </TouchableOpacity>
           </View>
-
           <Text style={styles.label}>Atende Carro?</Text>
           <View style={styles.checkboxContainer}>
             <TouchableOpacity
@@ -306,9 +332,7 @@ export default function NewClient() {
               <Text>Não</Text>
             </TouchableOpacity>
           </View>
-
           <Text style={styles.label}>24 Horas?</Text>
-
           <View style={styles.checkboxContainer}>
             <TouchableOpacity
               onPress={() => setEh24Horas(true)}
@@ -398,7 +422,6 @@ export default function NewClient() {
               )}
             </View>
           ))}
-
           <Text style={styles.label}>Nome do Responsável</Text>
           <TextInput
             style={styles.input}
@@ -406,7 +429,6 @@ export default function NewClient() {
             onChangeText={setResponsavel}
             placeholder="Responsável pela mecânica"
           />
-
           <Text style={styles.label}>CPF do Responsável</Text>
           <TextInput
             style={styles.input}
@@ -414,7 +436,6 @@ export default function NewClient() {
             onChangeText={setCpfResponsavel}
             placeholder="CPF do responsável"
           />
-
           {/* CAMPO PARA O TELEFONE QUE SERA USADO PRO WHATSAPP */}
           <Text style={styles.label}>Telefone</Text>
           <TextInput
@@ -438,7 +459,6 @@ export default function NewClient() {
               <Text>{categoria}</Text>
             </TouchableOpacity>
           ))}
-
           <Text style={styles.label}>Endereço</Text>
           <TextInput
             style={styles.input}
@@ -446,7 +466,14 @@ export default function NewClient() {
             onChangeText={setEndereco}
             placeholder="Endereço completo da mecânica"
           />
-
+          <Text style={styles.label}>Link do Google Maps</Text>
+          <TextInput
+            style={styles.input}
+            value={mapsLink}
+            onChangeText={setMapsLink}
+            placeholder="Cole o link completo do Google Maps"
+            keyboardType="url"
+          />
           <TouchableOpacity onPress={handleNewClient} style={styles.button}>
             <Text style={styles.buttonText}>Cadastrar Mecânica</Text>
           </TouchableOpacity>

@@ -37,6 +37,7 @@ export default function UpdateClient({ route }) {
   const [endereco, setEndereco] = useState("");
   const [telefone, setTelefone] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
+  const [mapsLink, setMapsLink] = useState("");
   const [diasFuncionamento, setDiasFuncionamento] = useState({
     segunda: { aberto: false, abertura: "08:00", fechamento: "18:00" },
     terca: { aberto: false, abertura: "08:00", fechamento: "18:00" },
@@ -58,31 +59,30 @@ export default function UpdateClient({ route }) {
 
   // Definindo os horários
   const horarios = [
-    "00:00",
-    "01:00",
-    "02:00",
-    "03:00",
-    "04:00",
-    "05:00",
-    "06:00",
-    "07:00",
-    "08:00",
-    "09:00",
-    "10:00",
-    "11:00",
-    "12:00",
-    "13:00",
-    "14:00",
-    "15:00",
-    "16:00",
-    "17:00",
-    "18:00",
-    "19:00",
-    "20:00",
-    "21:00",
-    "22:00",
-    "23:00",
+    "00:00", "01:00", "02:00", "03:00", "04:00", "05:00", "06:00", "07:00",
+    "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00",
+    "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"
   ];
+
+  // Função para extrair coordenadas do link
+  const extractCoordinates = (url) => {
+    const formats = [
+      /@(-?\d+\.\d+),(-?\d+\.\d+)/,
+      /!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/,
+      /lat=(-?\d+\.\d+)&lng=(-?\d+\.\d+)/
+    ];
+
+    for (const regex of formats) {
+      const match = url.match(regex);
+      if (match && match.length >= 3) {
+        return {
+          latitude: parseFloat(match[1]),
+          longitude: parseFloat(match[2])
+        };
+      }
+    }
+    return null;
+  };
 
   // Carregar dados existentes
   useEffect(() => {
@@ -103,18 +103,14 @@ export default function UpdateClient({ route }) {
         setEndereco(data.endereco);
         setTelefone(data.telefone);
         setSelectedImage(data.selectedImage);
+        setMapsLink(data.mapsLink || "");
         
         // Converter dias numéricos para formato de texto
         const diasConvertidos = {};
         Object.entries(data.diasFuncionamento).forEach(([diaNum, dados]) => {
           const diasMap = {
-            0: "domingo",
-            1: "segunda",
-            2: "terca",
-            3: "quarta",
-            4: "quinta",
-            5: "sexta",
-            6: "sabado"
+            0: "domingo", 1: "segunda", 2: "terca", 3: "quarta",
+            4: "quinta", 5: "sexta", 6: "sabado"
           };
           diasConvertidos[diasMap[diaNum]] = dados;
         });
@@ -170,16 +166,18 @@ export default function UpdateClient({ route }) {
 
   const handleUpdate = async () => {
     try {
+      const coords = extractCoordinates(mapsLink);
+      
+      if (!coords) {
+        Alert.alert("Erro", "Link do Google Maps inválido!");
+        return;
+      }
+
       // Converter dias para formato numérico
       const diasNumericos = Object.entries(diasFuncionamento).reduce((acc, [dia, dados]) => {
         const diasMap = {
-          segunda: 1,
-          terca: 2,
-          quarta: 3,
-          quinta: 4,
-          sexta: 5,
-          sabado: 6,
-          domingo: 0
+          segunda: 1, terca: 2, quarta: 3, quinta: 4,
+          sexta: 5, sabado: 6, domingo: 0
         };
         acc[diasMap[dia]] = dados;
         return acc;
@@ -197,6 +195,9 @@ export default function UpdateClient({ route }) {
         endereco,
         telefone,
         selectedImage,
+        mapsLink,
+        latitude: coords.latitude,
+        longitude: coords.longitude,
         diasFuncionamento: diasNumericos
       });
       
@@ -209,7 +210,6 @@ export default function UpdateClient({ route }) {
 
   const handleDelete = async () => {
     try {
-      // Deletar imagem do Storage
       if (selectedImage) {
         const imageRef = ref(storage, selectedImage);
         await deleteObject(imageRef);
@@ -227,7 +227,7 @@ export default function UpdateClient({ route }) {
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <Text style={styles.title}>Editar Mecânica</Text>
-  
+
         {/* Cidade */}
         <Text style={styles.label}>Cidade</Text>
         <Picker
@@ -240,7 +240,7 @@ export default function UpdateClient({ route }) {
           <Picker.Item label="Rio de Janeiro" value="Rio de Janeiro" />
           <Picker.Item label="Goiânia" value="Goiânia" />
         </Picker>
-  
+
         {/* Nome Fantasia */}
         <Text style={styles.label}>Nome</Text>
         <TextInput
@@ -249,14 +249,24 @@ export default function UpdateClient({ route }) {
           onChangeText={setNomeFantasia}
           placeholder="Nome da mecânica"
         />
-  
+
+        {/* Link do Google Maps */}
+        <Text style={styles.label}>Link do Google Maps</Text>
+        <TextInput
+          style={styles.input}
+          value={mapsLink}
+          onChangeText={setMapsLink}
+          placeholder="Cole o link completo do Google Maps"
+          keyboardType="url"
+        />
+
         {/* Foto */}
         <Text style={styles.label}>Foto</Text>
         <Button title="Alterar Foto" onPress={pickImage} />
         {selectedImage && (
           <Image source={{ uri: selectedImage }} style={styles.image} />
         )}
-  
+
         {/* Atende Moto */}
         <Text style={styles.label}>Atende Moto?</Text>
         <View style={styles.checkboxContainer}>
@@ -283,7 +293,7 @@ export default function UpdateClient({ route }) {
             <Text>Não</Text>
           </TouchableOpacity>
         </View>
-  
+
         {/* Atende Carro */}
         <Text style={styles.label}>Atende Carro?</Text>
         <View style={styles.checkboxContainer}>
@@ -310,7 +320,7 @@ export default function UpdateClient({ route }) {
             <Text>Não</Text>
           </TouchableOpacity>
         </View>
-  
+
         {/* 24 Horas */}
         <Text style={styles.label}>24 Horas?</Text>
         <View style={styles.checkboxContainer}>
@@ -337,7 +347,7 @@ export default function UpdateClient({ route }) {
             <Text>Não</Text>
           </TouchableOpacity>
         </View>
-  
+
         {/* Dias de Funcionamento */}
         {!eh24Horas && (
           <>
@@ -359,7 +369,7 @@ export default function UpdateClient({ route }) {
                     {dia.charAt(0).toUpperCase() + dia.slice(1)}
                   </Text>
                 </TouchableOpacity>
-  
+
                 {diasFuncionamento[dia].aberto && (
                   <View style={styles.horarioContainer}>
                     <View style={styles.horarioPickerContainer}>
@@ -376,7 +386,7 @@ export default function UpdateClient({ route }) {
                         ))}
                       </Picker>
                     </View>
-  
+
                     <View style={styles.horarioPickerContainer}>
                       <Text>Fechamento:</Text>
                       <Picker
@@ -397,7 +407,7 @@ export default function UpdateClient({ route }) {
             ))}
           </>
         )}
-  
+
         {/* Responsável */}
         <Text style={styles.label}>Responsável</Text>
         <TextInput
@@ -406,7 +416,7 @@ export default function UpdateClient({ route }) {
           onChangeText={setResponsavel}
           placeholder="Nome do responsável"
         />
-  
+
         {/* CPF */}
         <Text style={styles.label}>CPF do Responsável</Text>
         <TextInput
@@ -416,7 +426,7 @@ export default function UpdateClient({ route }) {
           placeholder="CPF do responsável"
           keyboardType="numeric"
         />
-  
+
         {/* Categorias */}
         <Text style={styles.label}>Categorias</Text>
         <View style={styles.categoriasContainer}>
@@ -435,7 +445,7 @@ export default function UpdateClient({ route }) {
             </TouchableOpacity>
           ))}
         </View>
-  
+
         {/* Endereço */}
         <Text style={styles.label}>Endereço</Text>
         <TextInput
@@ -444,7 +454,7 @@ export default function UpdateClient({ route }) {
           onChangeText={setEndereco}
           placeholder="Endereço completo"
         />
-  
+
         {/* Telefone */}
         <Text style={styles.label}>Telefone</Text>
         <TextInput
@@ -454,12 +464,12 @@ export default function UpdateClient({ route }) {
           placeholder="Telefone para contato"
           keyboardType="phone-pad"
         />
-  
+
         {/* Botões */}
         <TouchableOpacity style={styles.button} onPress={handleUpdate}>
           <Text style={styles.buttonText}>Salvar Alterações</Text>
         </TouchableOpacity>
-  
+
         <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
           <Text style={styles.buttonText}>Excluir Mecânica</Text>
         </TouchableOpacity>
@@ -473,34 +483,56 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
   },
+  scrollContainer: {
+    paddingBottom: 30,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginVertical: 20,
+    textAlign: 'center',
+  },
+  label: {
+    fontSize: 16,
+    marginVertical: 8,
+    fontWeight: 'bold',
+  },
   input: {
     borderWidth: 1,
     borderColor: '#ccc',
-    padding: 10,
+    padding: 12,
     marginBottom: 15,
-    borderRadius: 5,
+    borderRadius: 8,
+  },
+  picker: {
+    backgroundColor: '#f0f0f0',
+    marginBottom: 15,
+    borderRadius: 8,
+  },
+  image: {
+    width: 200,
+    height: 200,
+    borderRadius: 10,
+    alignSelf: 'center',
+    margin: 10,
   },
   button: {
     backgroundColor: '#007bff',
     padding: 15,
-    borderRadius: 5,
+    borderRadius: 8,
+    marginVertical: 10,
     alignItems: 'center',
-    marginBottom: 10,
   },
   deleteButton: {
     backgroundColor: '#dc3545',
     padding: 15,
-    borderRadius: 5,
+    borderRadius: 8,
+    marginVertical: 10,
     alignItems: 'center',
   },
   buttonText: {
     color: 'white',
     fontWeight: 'bold',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 20,
   },
   checkboxContainer: {
     flexDirection: 'row',

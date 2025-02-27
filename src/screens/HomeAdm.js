@@ -1,3 +1,4 @@
+// HOMEADM.JS
 import React, { useEffect, useState } from "react";
 import { Text, View, StyleSheet, ImageBackground } from "react-native";
 import { auth } from "../firebase-config/firebasecofing";
@@ -54,7 +55,7 @@ export default function HomeAdm() {
             style={styles.btnNewClient}
             onPress={() => navigation.navigate("NewClient")}
           >
-            <Text style={styles.buttonText}>Cadastrar Novo Cliente</Text>
+            <Text style={styles.buttonText}>Novo Cliente</Text>
           </TouchableOpacity>
 
           {/* Novo botão para listagem */}
@@ -62,14 +63,19 @@ export default function HomeAdm() {
             style={styles.btnListClient}
             onPress={() => navigation.navigate("ListClient")}
           >
-            <Text style={styles.buttonText}>Listar Mecânicas</Text>
+            <Text style={styles.buttonText}>Mecânicas</Text>
           </TouchableOpacity>
-
+          <TouchableOpacity
+            style={styles.adminButton}
+            onPress={() => navigation.navigate("AdminUsers")}
+          >
+            <Text style={styles.buttonText}>CRIAR ADMINISTRADOR</Text>
+          </TouchableOpacity>
           <TouchableOpacity
             style={styles.btnHome}
             onPress={() => navigation.navigate("Home")}
           >
-            <Text style={styles.buttonText}>Ir para a Página Inicial</Text>
+            <Text style={styles.buttonText}>Página Inicial</Text>
           </TouchableOpacity>
         </View>
       </ImageBackground>
@@ -88,46 +94,59 @@ const styles = StyleSheet.create({
     height: "100%",
     justifyContent: "center",
     alignItems: "center",
-
-    backgroundColor: "#f4f4f4", // cor de fundo suave
+    
   },
   welcomeText: {
     fontSize: 20,
-    color: "#333",
+    color: "#32345E",
     marginBottom: 20,
     textAlign: "center",
   },
   containerMain: {
     flexDirection: "column",
     alignItems: "center",
+    rowGap:20,
   },
   btnNewClient: {
     backgroundColor: "#007BFF", // cor do botão
-    padding: 16,
+    paddingVertical:10,
     borderRadius: 5,
-    width: "80%",
-    marginBottom: 20,
+    minWidth: '70%',
+    borderRadius: 8,
     alignItems: "center",
   },
   btnListClient: {
-    backgroundColor: "#28a745", // Cor verde para diferenciar
+    backgroundColor: "#32345E", // Cor verde para diferenciar
     padding: 16,
     borderRadius: 5,
-    width: "80%",
-    marginBottom: 20,
+    minWidth: '70%',
+    paddingVertical:10,
     alignItems: "center",
+    borderRadius: 8,
   },
   btnHome: {
-    backgroundColor: "#007BFF",
-    padding: 16,
+    backgroundColor: "#53A9C5",
+    paddingVertical:10,
     borderRadius: 5,
-    width: "80%",
+    minWidth: '70%',
     marginBottom: 20,
     alignItems: "center",
+    borderRadius: 8,
   },
   buttonText: {
     color: "white",
     fontSize: 16,
     fontWeight: "bold",
+    textAlign:'center',
+    textTransform:'uppercase'
+  },
+  adminButton: {
+    backgroundColor: '#C54343',
+    paddingVertical:10,
+    borderRadius: 8,
+    
+    minWidth: '70%',
+    alignSelf: 'center',
+    
   },
 });
