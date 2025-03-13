@@ -36,7 +36,6 @@ export default function Cadastro() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [termosAceitos, setTermosAceitos] = useState(false);
-
   const navigation = useNavigation();
   const auth = getAuth(app);
   const db = getFirestore(app);

@@ -11,6 +11,8 @@ import {
   TouchableOpacity,
   ScrollView,
   StatusBar,
+  Alert, 
+  Linking
 } from "react-native";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 import app from "../firebase-config/firebasecofing";
@@ -38,6 +40,7 @@ export default function Details({ route }) {
 
   // Função para buscar detalhes da mecânica pelo ID
   const fetchMecanicaDetails = async () => {
+    setLoading(true);
     try {
       const docRef = doc(db, "mecanicas", id);
       const docSnap = await getDoc(docRef);
@@ -61,7 +64,7 @@ export default function Details({ route }) {
   if (loading) {
     return (
       <SafeAreaView style={styles.container}>
-        <ActivityIndicator size="large" color="#007bff" />
+        <ActivityIndicator size="large" color="#c54343" />
       </SafeAreaView>
     );
   }
@@ -106,7 +109,7 @@ export default function Details({ route }) {
               />
             ) : (
               <Image
-                source={{ uri: item.selectedImage }}
+                source={require("../../assets/logopadrao.png")}
                 style={styles.coverImage}
               />
             )}
@@ -153,10 +156,22 @@ export default function Details({ route }) {
           </View>
 
           {/* Botão Socorro Ze */}
-          <TouchableOpacity style={styles.helpButton}>
-            <Ionicons name="logo-whatsapp" size={28} color="white" />
-            <Text style={styles.helpButtonText}>Socorro Ze</Text>
-          </TouchableOpacity>
+          <TouchableOpacity
+        style={styles.helpButton}
+        onPress={() => {
+          if (mecanica.telefone) {
+            const mensagem = encodeURIComponent(
+              `Olá, encontrei sua mecânica \"${mecanica.nomeFantasia}\" pelo aplicativo Socorro Zé. Você poderia me atender agora?`
+            );
+            Linking.openURL(`https://wa.me/${mecanica.telefone}?text=${mensagem}`);
+          } else {
+            Alert.alert("Aviso", "Telefone não disponível!");
+          }
+        }}
+      >
+        <Ionicons name="logo-whatsapp" size={28} color="white" />
+        <Text style={styles.helpButtonText}>Socorro Zé</Text>
+      </TouchableOpacity>
 
           {/* Informações adicionais */}
           <View style={styles.infoContainer}>

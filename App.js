@@ -54,7 +54,7 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen name='Welcome' options={{headerShown:false}} component={Welcome}/>
-        <Stack.Screen name='Home' component={Home} />
+        <Stack.Screen name='Home' options={{headerShown:false}} component={Home} />
         <Stack.Screen name='Cadastro' options={{headerShown:false}} component={Cadastro} />
         <Stack.Screen name='Login' options={{headerShown:false}} component={Login} />
         <Stack.Screen name= 'HomeAdm' component={HomeAdm}/>

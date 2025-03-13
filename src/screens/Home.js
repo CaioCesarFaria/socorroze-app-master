@@ -32,6 +32,8 @@ import Entypo from '@expo/vector-icons/Entypo';
 import * as Location from "expo-location";
 import { haversineDistance } from "../utils/geoUtils";
 
+
+
 const calendarIcon = require("../../assets/icons/icon_calendar.png");
 const categoryIcons = {
   Mecânica: require("../../assets/icons/icon_mecanica.png"),
@@ -58,20 +60,20 @@ export default function Home() {
   const navigation = useNavigation();
   const db = getFirestore(app);
   const auth = getAuth(app);
-
+  
   const [nomeUsuario, setNomeUsuario] = useState("");
   const [mecanicas, setMecanicas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
-  const [locationError, setLocationError] = useState(null);
+  const [locationError, setLocationError] = useState("");
 
   const handleLogout = async () => {
     try {
       await auth.signOut();
       navigation.replace("Login");
     } catch (error) {
-      console.error("Erro ao fazer logout:", error);
+      Alert.alert("Erro", "Falha ao fazer logout.");
     }
   };
 
@@ -85,9 +87,7 @@ export default function Home() {
         }
       }
     } catch (error) {
-      console.error("Erro ao buscar dados do usuário:", error);
-    } finally {
-      setLoading(false);
+      Alert.alert("Erro", "Falha ao obter usuário.");
     }
   };
 
@@ -264,7 +264,12 @@ export default function Home() {
           style={styles.whatsappContainer}
           onPress={() => {
             if (item.telefone) {
-              Linking.openURL(`https://wa.me/${item.telefone}`);
+              const mensagem = encodeURIComponent(
+                `Olá, encontrei sua mecânica "${item.nomeFantasia}" pelo aplicativo Socorro Zé. Poderia me atender agora?`
+              );
+              Linking.openURL(`https://wa.me/${item.telefone}?text=${mensagem}`);
+            } else {
+              Alert.alert("Aviso", "Telefone não disponível!");
             }
           }}
         >

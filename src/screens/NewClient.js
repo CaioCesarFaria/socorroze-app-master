@@ -172,7 +172,7 @@ export default function NewClient() {
 
         // Obtenha a URL pública da imagem
         const downloadURL = await getDownloadURL(imageRef);
-
+        
         // Atualize o estado
         setSelectedImage(downloadURL);
         Alert.alert("Sucesso!", "Imagem carregada com sucesso!");

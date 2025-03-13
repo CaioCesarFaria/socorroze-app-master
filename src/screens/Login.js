@@ -1,4 +1,4 @@
-// Login.js 
+// Login.js
 import React, { useState } from "react";
 import {
   SafeAreaView,
@@ -16,13 +16,9 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   Platform,
+  ActivityIndicator,
 } from "react-native";
-import {
-  getAuth,
-  signInWithEmailAndPassword,
-  browserLocalPersistence,
-  browserSessionPersistence,
-} from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
@@ -31,6 +27,7 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [keepLoggedIn, setKeepLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
 
   const handleLogin = async () => {
@@ -39,50 +36,40 @@ export default function Login() {
       return;
     }
 
+    setLoading(true);
     const auth = getAuth();
-    try {
-      // Define o modo de persistência
-      const persistenceMode = keepLoggedIn
-        ? browserLocalPersistence
-        : browserSessionPersistence;
 
-      // Realiza o login
+    try {
       const userCredential = await signInWithEmailAndPassword(
         auth,
         email,
         password
       );
 
-      // Após o login, busca os dados do usuário no Firestore
       const db = getFirestore();
       const userRef = doc(db, "usuarios", userCredential.user.uid);
       const userSnap = await getDoc(userRef);
 
       if (userSnap.exists()) {
         const userData = userSnap.data();
-
-        // Se o usuário for admin ou master, redireciona para a HomeAdm
         if (userData.role === "admin" || userData.role === "master") {
-          navigation.navigate("HomeAdm", { isAdmin: true });
+          navigation.replace("HomeAdm", { isAdmin: true });
           Alert.alert("Bem-vindo Administrador");
         } else {
-          // Se for usuário comum, vai para a Home
           navigation.replace("Home");
         }
       } else {
-        // Se não encontrar o documento, você pode optar por tratar como usuário comum
         navigation.replace("Home");
       }
     } catch (error) {
-      let customMessage = "Erro ao fazer login.";
-      if (error.code === "auth/user-not-found") {
-        customMessage = "Usuário não encontrado!";
-      } else if (error.code === "auth/wrong-password") {
-        customMessage = "Senha incorreta!";
-      } else if (error.code === "auth/invalid-email") {
-        customMessage = "E-mail inválido!";
-      }
-      Alert.alert("Erro", customMessage);
+      const errors = {
+        "auth/user-not-found": "Usuário não encontrado!",
+        "auth/wrong-password": "Senha incorreta!",
+        "auth/invalid-email": "E-mail inválido!",
+      };
+      Alert.alert("Erro", errors[error.code] || "Erro ao fazer login.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -91,7 +78,6 @@ export default function Login() {
       <KeyboardAvoidingView
         style={{ flex: 1, width: "100%" }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 80}
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <ScrollView
@@ -137,8 +123,8 @@ export default function Login() {
                 <View style={styles.switchContainer}>
                   <Text style={styles.switchText}>Manter login</Text>
                   <Switch
-                    trackColor={{ false: "#fff", true: "#C54343" }}
-                    thumbColor={keepLoggedIn ? "#fff" : "#FF0000"}
+                    trackColor={{ false: "#767577", true: "#C54343" }}
+                    thumbColor={keepLoggedIn ? "#fff" : "#f4f3f4"}
                     value={keepLoggedIn}
                     onValueChange={setKeepLoggedIn}
                   />
@@ -153,7 +139,11 @@ export default function Login() {
                 </TouchableOpacity>
               </View>
               <TouchableOpacity style={styles.button} onPress={handleLogin}>
-                <Text style={styles.buttonText}>Entrar</Text>
+                {loading ? (
+                  <ActivityIndicator size="small" color="#ffffff" />
+                ) : (
+                  <Text style={styles.buttonText}>Entrar</Text>
+                )}
               </TouchableOpacity>
             </ImageBackground>
           </ScrollView>
@@ -251,5 +241,3 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
-
-
