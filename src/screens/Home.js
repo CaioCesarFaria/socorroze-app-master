@@ -11,6 +11,7 @@ import {
   ImageBackground,
   Image,
   Linking,
+  Alert,
   ScrollView,
   Platform,
   StatusBar,
@@ -31,7 +32,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import Entypo from '@expo/vector-icons/Entypo';
 import * as Location from "expo-location";
 import { haversineDistance } from "../utils/geoUtils";
-
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 
 const calendarIcon = require("../../assets/icons/icon_calendar.png");
@@ -110,6 +111,7 @@ export default function Home() {
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== "granted") {
       setLocationError("Permissão de localização negada");
+      Alert.alert("Erro", "Permissão de localização negada");
       return;
     }
 
@@ -249,7 +251,7 @@ export default function Home() {
                 <View
                   style={[
                     styles.statusCircle,
-                    { backgroundColor: aberto || eh24Horas ? "green" : "red" },
+                    { backgroundColor: aberto || item.eh24Horas ? "green" : "red" },
                   ]}
                 />
                 <Text style={styles.statusText}>

@@ -23,6 +23,7 @@ import EsqueciSenha from './src/screens/EsqueciSenha';
 import ListClient from './src/screens/ListClient';
 import UpdateClient from './src/screens/UpdateClient';
 import AdminUsers from './src/screens/AdminUsers';
+import HomeTabs from './src/screens/HomeTabs';
 
 
 
@@ -54,7 +55,6 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen name='Welcome' options={{headerShown:false}} component={Welcome}/>
-        <Stack.Screen name='Home' options={{headerShown:false}} component={Home} />
         <Stack.Screen name='Cadastro' options={{headerShown:false}} component={Cadastro} />
         <Stack.Screen name='Login' options={{headerShown:false}} component={Login} />
         <Stack.Screen name= 'HomeAdm' component={HomeAdm}/>
@@ -64,7 +64,8 @@ export default function App() {
         <Stack.Screen name='EsqueciSenha' component={EsqueciSenha}/>
         <Stack.Screen name="ListClient" component={ListClient} />
         <Stack.Screen name="AdminUsers" component={AdminUsers} />
-<Stack.Screen name="UpdateClient" component={UpdateClient} />
+        <Stack.Screen name="UpdateClient" component={UpdateClient} />
+        <Stack.Screen name='HomeTabs' options={{headerShown:false}} component={HomeTabs} />
       </Stack.Navigator>
     </NavigationContainer>
   );

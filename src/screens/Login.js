@@ -56,10 +56,10 @@ export default function Login() {
           navigation.replace("HomeAdm", { isAdmin: true });
           Alert.alert("Bem-vindo Administrador");
         } else {
-          navigation.replace("Home");
+          navigation.replace("HomeTabs");
         }
       } else {
-        navigation.replace("Home");
+        navigation.replace("HomeTabs");
       }
     } catch (error) {
       const errors = {
