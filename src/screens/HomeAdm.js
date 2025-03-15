@@ -76,7 +76,7 @@ export default function HomeAdm() {
 
           <TouchableOpacity
             style={styles.btnHome}
-            onPress={() => navigation.navigate("Home")}
+            onPress={() => navigation.navigate("HomeTabs")}
           >
             <Text style={styles.buttonText}>Página Inicial</Text>
           </TouchableOpacity>

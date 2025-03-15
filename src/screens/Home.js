@@ -215,7 +215,7 @@ export default function Home() {
         <View style={styles.leftContainer}>
           <View style={styles.imageContainer}>
             <Image
-              source={{ uri: item.selectedImage }}
+              source={item.selectedImage ? { uri: item.selectedImage } : require('../../assets/logopadrao.png')} 
               style={styles.coverImage}
             />
           </View>
