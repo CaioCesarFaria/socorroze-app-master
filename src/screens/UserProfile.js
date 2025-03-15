@@ -1,4 +1,5 @@
 // UserProfile.js (completo corrigido e detalhado)
+// UserProfile.js (Corrigido e Completo)
 import React, { useEffect, useState } from "react";
 import {
   SafeAreaView,
@@ -12,6 +13,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  ImageBackground,
 } from "react-native";
 import { getAuth, updateEmail } from "firebase/auth";
 import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
@@ -45,7 +47,7 @@ export default function UserProfile() {
         }
       }
     } catch (error) {
-      Alert.alert("Erro", "Não foi possível carregar os dados do perfil.");
+      Alert.alert("Erro", "Não foi possível carregar os dados.");
     } finally {
       setLoading(false);
     }
@@ -54,6 +56,8 @@ export default function UserProfile() {
   const handleSalvar = async () => {
     setLoading(true);
 
+    const auth = getAuth(app);
+    const db = getFirestore(app);
     const user = auth.currentUser;
 
     if (!nome || !telefone || !email) {
@@ -63,7 +67,7 @@ export default function UserProfile() {
     }
 
     try {
-      const userRef = doc(getFirestore(app), "usuarios", user.uid);
+      const userRef = doc(db, "usuarios", user.uid);
       await updateDoc(userRef, {
         nome,
         telefone,
@@ -82,11 +86,16 @@ export default function UserProfile() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-      >
+    <ImageBackground
+      source={require("../../assets/bgfull.png")}
+      style={styles.bgImagem}
+      resizeMode="cover"
+    >
+      <SafeAreaView style={styles.container}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
+          style={{ flex: 1 }}
+        >
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           <Text style={styles.title}>Editar Perfil</Text>
 
@@ -126,33 +135,48 @@ export default function UserProfile() {
           </TouchableOpacity>
         </ScrollView>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+      </SafeAreaView>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f4f4f4",
+  },
+  bgImagem: {
+    flex: 1,
+    width: "100%",
+    height: "100%",
+  },
+  scrollContainer: {
+    flexGrow: 1,
     padding: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#32345E",
+    marginBottom: 20,
+    alignSelf: "center",
+    marginTop:20,
   },
   input: {
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 8,
-    padding: 10,
+    padding: 12,
     backgroundColor: "#fff",
     marginBottom: 16,
   },
   label: {
     fontSize: 16,
-    fontWeight: "bold",
     color: "#32345E",
-    marginBottom: 5,
+    marginBottom: 8,
   },
   button: {
     backgroundColor: "#C54343",
-    padding: 12,
+    padding: 14,
     borderRadius: 8,
     alignItems: "center",
     marginTop: 20,
