@@ -290,13 +290,27 @@ export default function UpdateClient({ route }) {
     }
   };
 
+  const toggleAtivo = async (newValue) => {
+    setAtivo(newValue);
+    try {
+      await updateDoc(doc(db, "mecanicas", mecanicaId), {
+        ativo: newValue,
+      });
+      Alert.alert("Sucesso!", `Mecânica ${newValue ? "ativada" : "desativada"} com sucesso!`);
+    } catch (error) {
+      console.error("Erro ao atualizar o status da mecânica:", error);
+      Alert.alert("Erro", "Não foi possível atualizar o status.");
+    }
+  };
+  
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <Text style={styles.title}>Editar Mecânica</Text>
         <View style={styles.switchContainer}>
           <Text style={styles.label}>Mecânica Ativa?</Text>
-          <Switch value={ativo} onValueChange={setAtivo} />
+          <Switch value={ativo} onValueChange={toggleAtivo} />
         </View>
         {/* Cidade */}
         <Text style={styles.label}>Cidade</Text>

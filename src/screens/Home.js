@@ -98,7 +98,7 @@ export default function Home() {
       const mecanicasList = querySnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
-      }));
+      })).filter((mecanica) => mecanica.ativo !== false);
       setMecanicas(mecanicasList);
     } catch (error) {
       console.error("Erro ao buscar mecânicas:", error);
