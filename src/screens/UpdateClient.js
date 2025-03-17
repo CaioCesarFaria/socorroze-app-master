@@ -10,6 +10,7 @@ import {
   ScrollView,
   Image,
   Button,
+  Switch,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import {
@@ -69,6 +70,8 @@ export default function UpdateClient({ route }) {
     "Pintura",
     "Revisão",
   ];
+  const [ativo, setAtivo] = useState(true);
+
 
   // Definindo os horários
   const horarios = [
@@ -138,6 +141,7 @@ export default function UpdateClient({ route }) {
         setTelefone(data.telefone);
         setSelectedImage(data.selectedImage);
         setMapsLink(data.mapsLink || "");
+        setAtivo(data.ativo ?? true);
 
         // Converter dias numéricos para formato de texto
         const diasConvertidos = {};
@@ -169,8 +173,7 @@ export default function UpdateClient({ route }) {
       }
 
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.mediaTypes.Images,
-        allowsEditing: true,
+        mediaTypes: ImagePicker.MediaTypeOptions.Images, // ✅ CORRETO
         aspect: [4, 3],
         quality: 1,
       });
@@ -183,8 +186,15 @@ export default function UpdateClient({ route }) {
         await uploadBytes(imageRef, blob);
         const downloadURL = await getDownloadURL(imageRef);
         setSelectedImage(downloadURL);
+
+        await updateDoc(doc(db, "mecanicas", mecanicaId), {
+          selectedImage: downloadURL
+        });
+
+        Alert.alert("Sucesso!", "Imagem alterada com sucesso!");
       }
     } catch (error) {
+      console.error("Erro ao carregar a imagem:", error);
       Alert.alert("Erro", "Falha ao carregar imagem");
     }
   };
@@ -255,6 +265,7 @@ export default function UpdateClient({ route }) {
         longitude: coords.longitude,
         diasFuncionamento: diasNumericos,
         ownerId: user.uid,
+        ativo,
       });
 
       Alert.alert("Sucesso!", "Dados atualizados!");
@@ -283,7 +294,10 @@ export default function UpdateClient({ route }) {
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <Text style={styles.title}>Editar Mecânica</Text>
-
+        <View style={styles.switchContainer}>
+          <Text style={styles.label}>Mecânica Ativa?</Text>
+          <Switch value={ativo} onValueChange={setAtivo} />
+        </View>
         {/* Cidade */}
         <Text style={styles.label}>Cidade</Text>
         <Picker

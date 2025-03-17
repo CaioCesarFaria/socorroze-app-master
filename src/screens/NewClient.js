@@ -226,6 +226,7 @@ export default function NewClient() {
         diasFuncionamento: diasFuncionamentoNumerico,
         selectedImage: selectedImage,
         ownerId: user.uid,
+        ativo: true,
       });
       // Armazena o ID do documento recém-criado
       await updateDoc(docRef, { id: docRef.id });
