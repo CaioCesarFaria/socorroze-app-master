@@ -11,14 +11,15 @@ import {
   TouchableOpacity,
   ScrollView,
   StatusBar,
-  Alert, 
-  Linking
+  Alert,
+  Linking,
 } from "react-native";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 import app from "../firebase-config/firebasecofing";
 import Icon from "react-native-vector-icons/Ionicons";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
+import * as Location from "expo-location";
 
 // Definindo os ícones para cada categoria (mesmos da Home.js)
 const categoryIcons = {
@@ -37,6 +38,7 @@ export default function Details({ route }) {
   const db = getFirestore(app);
   const [mecanica, setMecanica] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [distancia, setDistancia] = useState(null);
 
   // Função para buscar detalhes da mecânica pelo ID
   const fetchMecanicaDetails = async () => {
@@ -60,7 +62,56 @@ export default function Details({ route }) {
   useEffect(() => {
     fetchMecanicaDetails();
   }, []);
+  // Função para calcular a distância exata, igual à Home.js
+  const haversineDistance = (lat1, lon1, lat2, lon2) => {
+    const toRad = (value) => (value * Math.PI) / 180;
+    const R = 6371; // Raio da Terra em KM
 
+    const dLat = toRad(lat2 - lat1);
+    const dLon = toRad(lon2 - lon1);
+
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(toRad(lat1)) *
+        Math.cos(toRad(lat2)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return R * c; // Distância em KM
+  };
+
+  // Função para pegar a localização do usuário e calcular a distância
+  const getUserLocationAndCalculateDistance = async () => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      console.log("Permissão de localização negada.");
+      return;
+    }
+
+    let location = await Location.getCurrentPositionAsync({});
+    const userLat = location.coords.latitude;
+    const userLon = location.coords.longitude;
+
+    if (mecanica.latitude && mecanica.longitude) {
+      const distanciaCalculada = haversineDistance(
+        userLat,
+        userLon,
+        mecanica.latitude,
+        mecanica.longitude
+      );
+
+      setDistancia(distanciaCalculada.toFixed(2)); // Formata para 2 casas decimais
+    }
+  };
+
+  // Chamar a função assim que carregar os dados da mecânica
+  useEffect(() => {
+    if (mecanica) {
+      getUserLocationAndCalculateDistance();
+    }
+  }, [mecanica]);
   if (loading) {
     return (
       <SafeAreaView style={styles.container}>
@@ -80,7 +131,6 @@ export default function Details({ route }) {
   // Exemplo de como você poderia “simular” o cálculo de aberto/fechado
   const isAberto = true;
   const horarioFechamento = "18:00";
-  const distanciaExemplo = "2 KM"; // Se tiver distância real, substitua
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -90,17 +140,16 @@ export default function Details({ route }) {
         style={styles.bgImagem}
         resizeMode="cover"
       >
-        
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           {/* Cabeçalho com imagem (se existir) e nome */}
           {/* Botão de Voltar */}
           <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <Ionicons name="arrow-back" size={28} color="#32345e" />
-          <Text style={styles.backButtonText}>Voltar</Text>
-        </TouchableOpacity>
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+          >
+            <Ionicons name="arrow-back" size={28} color="#32345e" />
+            <Text style={styles.backButtonText}>Voltar</Text>
+          </TouchableOpacity>
           <View style={styles.headerCard}>
             {mecanica.selectedImage ? (
               <Image
@@ -115,9 +164,11 @@ export default function Details({ route }) {
             )}
             <View style={styles.infoMec}>
               <Text style={styles.mecName}>{mecanica.nomeFantasia}</Text>
-              <View style={styles.ratingContainer}>
-                <Text style={styles.stars}>★★★★★</Text>
-                <Text style={styles.distance}>{distanciaExemplo}</Text>
+              <View style={styles.distanceContainer}>
+                <Ionicons name="location-outline" size={20} color="#32345E" />
+                <Text style={styles.distanceText}>
+                  {distancia ? `${distancia} km` : "Calculando..."}
+                </Text>
               </View>
             </View>
           </View>
@@ -157,36 +208,71 @@ export default function Details({ route }) {
 
           {/* Botão Socorro Ze */}
           <TouchableOpacity
-        style={styles.helpButton}
-        onPress={() => {
-          if (mecanica.telefone) {
-            const mensagem = encodeURIComponent(
-              `Olá, encontrei sua mecânica \"${mecanica.nomeFantasia}\" pelo aplicativo Socorro Zé. Você poderia me atender agora?`
-            );
-            Linking.openURL(`https://wa.me/${mecanica.telefone}?text=${mensagem}`);
-          } else {
-            Alert.alert("Aviso", "Telefone não disponível!");
-          }
-        }}
-      >
-        <Ionicons name="logo-whatsapp" size={28} color="white" />
-        <Text style={styles.helpButtonText}>Socorro Zé</Text>
-      </TouchableOpacity>
+            style={styles.helpButton}
+            onPress={() => {
+              if (mecanica.telefone) {
+                const mensagem = encodeURIComponent(
+                  `Olá, encontrei sua mecânica \"${mecanica.nomeFantasia}\" pelo aplicativo Socorro Zé. Você poderia me atender agora?`
+                );
+                Linking.openURL(
+                  `https://wa.me/${mecanica.telefone}?text=${mensagem}`
+                );
+              } else {
+                Alert.alert("Aviso", "Telefone não disponível!");
+              }
+            }}
+          >
+            <Ionicons name="logo-whatsapp" size={28} color="white" />
+            <Text style={styles.helpButtonText}>Socorro Zé</Text>
+          </TouchableOpacity>
 
           {/* Informações adicionais */}
           <View style={styles.infoContainer}>
-            <Text style={styles.infoText}>Cidade: {mecanica.cidade}</Text>
-            <Text style={styles.infoText}>Endereço: {mecanica.endereco}</Text>
-            <Text style={styles.infoText}>
-              Telefone:{" "}
-              {mecanica.telefone ? mecanica.telefone : "Não informado"}
-            </Text>
-            <Text style={styles.infoText}>
-              Atende Moto: {mecanica.atendeMoto ? "Sim" : "Não"}
-            </Text>
-            <Text style={styles.infoText}>
-              Atende Carro: {mecanica.atendeCarro ? "Sim" : "Não"}
-            </Text>
+            <View style={styles.infoRow}>
+              <Ionicons name="location-outline" size={22} color="#32345E" />
+              <Text style={styles.infoText}>
+                <Text style={styles.bold}>Cidade:</Text> {mecanica.cidade}
+              </Text>
+            </View>
+
+            <View style={styles.infoRow}>
+              <Ionicons name="map-outline" size={22} color="#32345E" />
+              <Text style={styles.infoText}>
+                <Text style={styles.bold}>Endereço:</Text> {mecanica.endereco}
+              </Text>
+            </View>
+
+            <View style={styles.infoRow}>
+              <Ionicons name="call-outline" size={22} color="#32345E" />
+              <Text style={styles.infoText}>
+                <Text style={styles.bold}>Telefone:</Text>{" "}
+                {mecanica.telefone ? mecanica.telefone : "Não informado"}
+              </Text>
+            </View>
+
+            <View style={styles.infoRow}>
+              <Ionicons
+                name="bicycle-outline"
+                size={22}
+                color={mecanica.atendeMoto ? "green" : "red"}
+              />
+              <Text style={styles.infoText}>
+                <Text style={styles.bold}>Atende Moto:</Text>{" "}
+                {mecanica.atendeMoto ? "Sim" : "Não"}
+              </Text>
+            </View>
+
+            <View style={styles.infoRow}>
+              <Ionicons
+                name="car-sport-outline"
+                size={22}
+                color={mecanica.atendeCarro ? "green" : "red"}
+              />
+              <Text style={styles.infoText}>
+                <Text style={styles.bold}>Atende Carro:</Text>{" "}
+                {mecanica.atendeCarro ? "Sim" : "Não"}
+              </Text>
+            </View>
           </View>
         </ScrollView>
       </ImageBackground>
@@ -203,15 +289,15 @@ const styles = StyleSheet.create({
     height: "100%",
   },
   backButton: {
-    flexDirection:'row',
-    alignItems:'center',
-    marginBottom:20,
-    marginTop:10,
-    columnGap:10,
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 20,
+    marginTop: 10,
+    columnGap: 10,
   },
   backButtonText: {
-    fontSize:16,
-    color:'#34325e'
+    fontSize: 16,
+    color: "#34325e",
   },
   scrollContainer: {
     marginTop: 30,
@@ -248,19 +334,26 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#fff",
   },
-  ratingContainer: {
+  distanceContainer: {
     flexDirection: "row",
-    columnGap: 10,
-    alignContent: "center",
-    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#f4f4f4", // Fundo leve pra destacar
+    padding: 10,
+    borderRadius: 10,
+    alignSelf: "flex-start", // Faz o bloco ficar apenas do tamanho necessário
+    marginTop: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3, // Sombrinha chique pro Android
   },
-  stars: {
-    color: "#FFD700",
+
+  distanceText: {
     fontSize: 16,
-  },
-  distance: {
-    color: "#fff",
-    fontSize: 16,
+    color: "#000",
+    fontWeight: "bold",
+    marginLeft: 8, // Dá um espacinho do ícone
   },
   categoriesContainer: {
     flexDirection: "row",
@@ -293,9 +386,9 @@ const styles = StyleSheet.create({
   openCloseContainer: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent:'center',
+    justifyContent: "center",
     marginTop: 20,
-    marginHorizontal:30,
+    marginHorizontal: 30,
     padding: 12,
     backgroundColor: "#fff",
     borderRadius: 10,
@@ -308,7 +401,7 @@ const styles = StyleSheet.create({
   openText: {
     fontSize: 16,
     color: "green",
-    fontWeight:'bold',
+    fontWeight: "bold",
   },
   closeText: {
     fontSize: 16,
@@ -330,21 +423,31 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   infoContainer: {
-    marginTop: 20,
-    marginHorizontal: 16,
     backgroundColor: "#fff",
-    borderRadius: 8,
+    borderRadius: 10,
     padding: 16,
+    marginTop: 20,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
+    shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
   },
+
+  infoRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 12,
+    columnGap: 10, // Espaço entre o ícone e o texto
+  },
+
   infoText: {
-    fontSize: 15,
-    color: "#333",
-    marginBottom: 6,
+    fontSize: 16,
+    color: "#32345E",
+  },
+
+  bold: {
+    fontWeight: "bold",
   },
   errorText: {
     fontSize: 18,

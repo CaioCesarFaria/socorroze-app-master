@@ -3,10 +3,11 @@ import React, { useEffect, useState } from "react";
 import { Text, View, StyleSheet, ImageBackground } from "react-native";
 import { auth } from "../firebase-config/firebasecofing";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function HomeAdm() {
   const navigation = useNavigation();
@@ -37,6 +38,15 @@ export default function HomeAdm() {
     // Limpeza do listener ao desmontar o componente
     return () => unsubscribeAuth();
   }, []);
+  // ✅ Função para deslogar
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      navigation.replace("Login");
+    } catch (error) {
+      Alert.alert("Erro", "Falha ao sair.");
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -45,6 +55,11 @@ export default function HomeAdm() {
         style={styles.bgImagem}
         resizeMode="cover"
       >
+        {/* ✅ Botão de Sair */}
+      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+        <Ionicons name="exit-outline" size={28} color="#C54343" />
+        <Text style={styles.logoutButtonText}>Sair</Text>
+      </TouchableOpacity>
         <Text style={styles.welcomeText}>
           {user
             ? `Olá, ${user.displayName || userData?.nome || "Usuário"}`
@@ -97,6 +112,19 @@ const styles = StyleSheet.create({
     height: "100%",
     justifyContent: "center",
     alignItems: "center",
+  },
+  logoutButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    width: "100%",
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+  },
+  logoutButtonText: {
+    fontSize: 16,
+    color: "#C54343",
+    marginLeft: 10,
   },
   welcomeText: {
     fontSize: 20,

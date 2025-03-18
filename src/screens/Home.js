@@ -24,7 +24,7 @@ import {
   getDocs,
 } from "firebase/firestore";
 import app from "../firebase-config/firebasecofing";
-import { getAuth } from "firebase/auth";
+import { getAuth, signOut } from "firebase/auth";
 import { useNavigation } from "@react-navigation/native";
 import moment from "moment";
 import "moment/locale/pt-br";
