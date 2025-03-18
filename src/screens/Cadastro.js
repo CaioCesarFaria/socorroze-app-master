@@ -64,7 +64,7 @@ export default function Cadastro() {
         senha
       );
       console.log("Usuário cadastrado:", userCredential.user);
-      navigation.navigate("Welcome");
+      
       const userId = userCredential.user.uid; // Obtém o UID do usuário autenticado
 
       const userDoc = doc(db, "usuarios", userId);
@@ -75,7 +75,17 @@ export default function Cadastro() {
         role: "user",
       });
 
-      console.log("Informações do usuário salvas no Firestore");
+      // ✅ ALERTA ANTES DE NAVEGAR PARA WELCOME
+    Alert.alert(
+      "Sucesso!",
+      "Usuário criado com sucesso!",
+      [
+        {
+          text: "OK",
+          onPress: () => navigation.navigate("Welcome"), // Só navega depois do alerta
+        }
+      ]
+    );
     } catch (error) {
       console.error("Erro ao cadastrar:", error);
       alert(error.message);

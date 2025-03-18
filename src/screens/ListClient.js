@@ -67,8 +67,8 @@ export default function ListClient() {
               navigation.navigate("UpdateClient", { mecanicaId: item.id })
             }
           >
-            <Text style={styles.nome}>{item.nomeFantasia}</Text>
-            <Text>{item.telefone || "Sem telefone cadastrado"}</Text>
+            <Text style={styles.nome}> {item.nomeFantasia}</Text>
+            <Text> Telefone:{item.telefone || "Sem telefone cadastrado"}</Text>
           </TouchableOpacity>
         )}
       />

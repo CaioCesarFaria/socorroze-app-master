@@ -59,7 +59,7 @@ export default function App() {
         <Stack.Screen name='Login' options={{headerShown:false}} component={Login} />
         <Stack.Screen name= 'HomeAdm' component={HomeAdm}/>
         <Stack.Screen name='NewClient' options={{headerShown:false}} component={NewClient}/>
-        <Stack.Screen name='TermosDePrivacidade' component={TermosDePrivacidade}/>
+        <Stack.Screen name='TermosDePrivacidade' options={{headerShown:false}} component={TermosDePrivacidade}/>
         <Stack.Screen name='Details' options={{headerShown:false}} component={Details}/>
         <Stack.Screen name='EsqueciSenha' component={EsqueciSenha}/>
         <Stack.Screen name="ListClient" options={{headerShown:false}} component={ListClient} />
