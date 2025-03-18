@@ -58,12 +58,12 @@ export default function App() {
         <Stack.Screen name='Cadastro' options={{headerShown:false}} component={Cadastro} />
         <Stack.Screen name='Login' options={{headerShown:false}} component={Login} />
         <Stack.Screen name= 'HomeAdm' component={HomeAdm}/>
-        <Stack.Screen name='NewClient' component={NewClient}/>
+        <Stack.Screen name='NewClient' options={{headerShown:false}} component={NewClient}/>
         <Stack.Screen name='TermosDePrivacidade' component={TermosDePrivacidade}/>
         <Stack.Screen name='Details' options={{headerShown:false}} component={Details}/>
         <Stack.Screen name='EsqueciSenha' component={EsqueciSenha}/>
-        <Stack.Screen name="ListClient" component={ListClient} />
-        <Stack.Screen name="AdminUsers" component={AdminUsers} />
+        <Stack.Screen name="ListClient" options={{headerShown:false}} component={ListClient} />
+        <Stack.Screen name="AdminUsers" options={{headerShown:false}} component={AdminUsers} />
         <Stack.Screen name="UpdateClient" component={UpdateClient} />
         <Stack.Screen name='HomeTabs' options={{headerShown:false}} component={HomeTabs} />
       </Stack.Navigator>

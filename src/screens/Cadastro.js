@@ -65,8 +65,9 @@ export default function Cadastro() {
       );
       console.log("Usuário cadastrado:", userCredential.user);
       navigation.navigate("Welcome");
+      const userId = userCredential.user.uid; // Obtém o UID do usuário autenticado
 
-      const userDoc = doc(db, "usuarios", userCredential.user.uid);
+      const userDoc = doc(db, "usuarios", userId);
       await setDoc(userDoc, {
         nome: nome,
         telefone: telefone,

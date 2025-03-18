@@ -29,11 +29,10 @@ import { useNavigation } from "@react-navigation/native";
 import moment from "moment";
 import "moment/locale/pt-br";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import Entypo from '@expo/vector-icons/Entypo';
+import Entypo from "@expo/vector-icons/Entypo";
 import * as Location from "expo-location";
 import { haversineDistance } from "../utils/geoUtils";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-
 
 const calendarIcon = require("../../assets/icons/icon_calendar.png");
 const categoryIcons = {
@@ -61,14 +60,15 @@ export default function Home() {
   const navigation = useNavigation();
   const db = getFirestore(app);
   const auth = getAuth(app);
-  
+
   const [nomeUsuario, setNomeUsuario] = useState("");
+  const [userRole, setUserRole] = useState("");
   const [mecanicas, setMecanicas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
   const [locationError, setLocationError] = useState("");
-
+  
   const handleLogout = async () => {
     try {
       await auth.signOut();
@@ -84,7 +84,10 @@ export default function Home() {
       if (user) {
         const userDoc = await getDoc(doc(db, "usuarios", user.uid));
         if (userDoc.exists()) {
+          const role = userDoc.data().role || "user";
           setNomeUsuario(userDoc.data().nome);
+          setUserRole(role);
+          console.log("Role do usuário:", role);
         }
       }
     } catch (error) {
@@ -95,10 +98,12 @@ export default function Home() {
   const fetchMecanicas = async () => {
     try {
       const querySnapshot = await getDocs(collection(db, "mecanicas"));
-      const mecanicasList = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      })).filter((mecanica) => mecanica.ativo !== false);
+      const mecanicasList = querySnapshot.docs
+        .map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }))
+        .filter((mecanica) => mecanica.ativo !== false);
       setMecanicas(mecanicasList);
     } catch (error) {
       console.error("Erro ao buscar mecânicas:", error);
@@ -215,7 +220,11 @@ export default function Home() {
         <View style={styles.leftContainer}>
           <View style={styles.imageContainer}>
             <Image
-              source={item.selectedImage ? { uri: item.selectedImage } : require('../../assets/logopadrao.png')} 
+              source={
+                item.selectedImage
+                  ? { uri: item.selectedImage }
+                  : require("../../assets/logopadrao.png")
+              }
               style={styles.coverImage}
             />
           </View>
@@ -242,7 +251,7 @@ export default function Home() {
                 )}
               </View>
               <View style={styles.distanceRow}>
-              <Entypo name="location-pin" size={20} color="green" />
+                <Entypo name="location-pin" size={20} color="green" />
                 <Text style={styles.distanceText}>
                   {formatDistance(distance)}
                 </Text>
@@ -251,7 +260,10 @@ export default function Home() {
                 <View
                   style={[
                     styles.statusCircle,
-                    { backgroundColor: aberto || item.eh24Horas ? "green" : "red" },
+                    {
+                      backgroundColor:
+                        aberto || item.eh24Horas ? "green" : "red",
+                    },
                   ]}
                 />
                 <Text style={styles.statusText}>
@@ -269,7 +281,9 @@ export default function Home() {
               const mensagem = encodeURIComponent(
                 `Olá, encontrei sua mecânica "${item.nomeFantasia}" pelo aplicativo Socorro Zé. Poderia me atender agora?`
               );
-              Linking.openURL(`https://wa.me/${item.telefone}?text=${mensagem}`);
+              Linking.openURL(
+                `https://wa.me/${item.telefone}?text=${mensagem}`
+              );
             } else {
               Alert.alert("Aviso", "Telefone não disponível!");
             }
@@ -298,6 +312,18 @@ export default function Home() {
         resizeMode="cover"
       >
         <View style={styles.headerContainer}>
+          {/* ✅ Botão que apenas "admin" e "master" podem ver */}
+        {userRole === "admin" || userRole === "master" ? (
+          <TouchableOpacity
+            onPress={() => navigation.navigate("HomeAdm")}
+            style={styles.backButton}
+          >
+            <Ionicons name="arrow-back" size={24} color="#000" />
+            <Text style={styles.backButtonText}>
+              Voltar para HomeAdm
+            </Text>
+          </TouchableOpacity>
+        ) : null}
           <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
             <Ionicons name="exit-outline" size={28} color="#C54343" />
             <Text style={styles.logoutButtonText}>Sair</Text>
@@ -361,6 +387,7 @@ const styles = StyleSheet.create({
     paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
   headerContainer: {
+    flexDirection:'column',
     paddingHorizontal: 20,
     paddingTop: 10,
   },
@@ -374,6 +401,26 @@ const styles = StyleSheet.create({
   logoutButtonText: {
     fontSize: 14,
     color: "#32345E",
+  },
+  backButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 10,
+    
+    borderRadius: 8,
+    shadowColor: "#000",
+    
+    
+    
+    
+    marginBottom: 10,
+  },
+  
+  backButtonText: {
+    fontSize: 16,
+    color: "#000",
+    fontWeight: "bold",
+    marginLeft: 5,
   },
   textSaudacao: {
     color: "#32345E",
@@ -505,8 +552,7 @@ const styles = StyleSheet.create({
   distanceRow: {
     flexDirection: "row",
     alignItems: "center",
-    paddingRight:5,
-    
+    paddingRight: 5,
   },
   distanceText: {
     color: "black",

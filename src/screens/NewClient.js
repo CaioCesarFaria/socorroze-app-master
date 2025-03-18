@@ -12,8 +12,11 @@ import {
   ImageBackground,
   Image,
   Button,
+  Platform,
+  StatusBar,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
+import { Ionicons } from "@expo/vector-icons";
 import app from "../firebase-config/firebasecofing";
 import {
   getFirestore,
@@ -156,7 +159,6 @@ export default function NewClient() {
 
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ["images"],
-        allowsEditing: true,
         aspect: [4, 3],
         quality: 1,
       });
@@ -259,11 +261,19 @@ export default function NewClient() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor="#32345e" />
       <ImageBackground
         source={require("../../assets/bgwhite.png")}
         style={styles.bgImagem}
         resizeMode="cover"
-      >
+      > 
+      <TouchableOpacity
+              style={styles.backButton}
+              onPress={() => navigation.goBack()}
+            >
+              <Ionicons name="arrow-back" size={28} color="#32345e" />
+              <Text style={styles.backButtonText}>Voltar</Text>
+            </TouchableOpacity>
         <ScrollView style={styles.scrolista}>
           <Text style={styles.title}>Cadastrar Nova Mecânica</Text>
           {/* Cidade */}
@@ -496,13 +506,25 @@ export default function NewClient() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
     backgroundColor: "#fff",
   },
   bgImagem: {
     flex: 1,
     width: "100%",
     height: "100%",
+  },
+  backButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 20,
+    marginTop: 10,
+    columnGap: 10,
+    marginLeft:10,
+  },
+  backButtonText: { 
+    fontSize: 16, 
+    color: "#34325e" 
   },
   scrolista: {
     paddingHorizontal: 30,

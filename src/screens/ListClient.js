@@ -1,5 +1,12 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  TextInput,
+} from "react-native";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
 import { useNavigation } from "@react-navigation/native";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -29,10 +36,16 @@ export default function ListClient() {
     );
   }, [mecanicas, searchQuery]);
 
-  
-
   return (
     <View style={styles.container}>
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => navigation.goBack()}
+      >
+        <Ionicons name="arrow-back" size={28} color="#32345e" />
+        <Text style={styles.backButtonText}>Voltar</Text>
+      </TouchableOpacity>
+
       <Text style={styles.title}>Mecânicas Cadastradas</Text>
       <View style={styles.searchContainer}>
         <Ionicons name="search" size={20} color="#32345E" />
@@ -50,7 +63,9 @@ export default function ListClient() {
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.item}
-            onPress={() => navigation.navigate("UpdateClient", { mecanicaId: item.id })}
+            onPress={() =>
+              navigation.navigate("UpdateClient", { mecanicaId: item.id })
+            }
           >
             <Text style={styles.nome}>{item.nomeFantasia}</Text>
             <Text>{item.telefone || "Sem telefone cadastrado"}</Text>
@@ -66,6 +81,17 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: "#F4B516",
+  },
+  backButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 20,
+    marginTop: 10,
+    columnGap: 10,
+  },
+  backButtonText: { 
+    fontSize: 16, 
+    color: "#34325e" 
   },
   title: {
     fontSize: 22,
@@ -86,14 +112,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
-    
   },
   searchInput: {
     flex: 1,
     paddingLeft: 8,
     fontSize: 16,
     color: "#32345E",
-    marginBottom:20,
+    marginBottom: 20,
   },
   item: {
     padding: 15,
@@ -113,7 +138,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#32345E",
   },
-  
+
   searchInput: {
     flex: 1,
     paddingLeft: 10,
