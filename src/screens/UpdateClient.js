@@ -11,6 +11,8 @@ import {
   Image,
   Button,
   Switch,
+  Platform,
+  StatusBar,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import {
@@ -30,6 +32,7 @@ import {
 import { getAuth } from "firebase/auth";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
+import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import app from "../firebase-config/firebasecofing";
 
@@ -306,6 +309,14 @@ export default function UpdateClient({ route }) {
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor="#32345e" />
+      <TouchableOpacity
+              style={styles.backButton}
+              onPress={() => navigation.goBack()}
+            >
+              <Ionicons name="arrow-back" size={28} color="#32345e" />
+              <Text style={styles.backButtonText}>Voltar</Text>
+            </TouchableOpacity>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <Text style={styles.title}>Editar Mecânica</Text>
         <View style={styles.switchContainer}>
@@ -576,6 +587,19 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+  },
+  backButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 20,
+    marginTop: 10,
+    columnGap: 10,
+    marginLeft:10,
+  },
+  backButtonText: { 
+    fontSize: 16, 
+    color: "#34325e" 
   },
   scrollContainer: {
     paddingBottom: 30,

@@ -64,7 +64,7 @@ export default function App() {
         <Stack.Screen name='EsqueciSenha' component={EsqueciSenha}/>
         <Stack.Screen name="ListClient" options={{headerShown:false}} component={ListClient} />
         <Stack.Screen name="AdminUsers" options={{headerShown:false}} component={AdminUsers} />
-        <Stack.Screen name="UpdateClient" component={UpdateClient} />
+        <Stack.Screen name="UpdateClient" options={{headerShown:false}} component={UpdateClient} />
         <Stack.Screen name='HomeTabs' options={{headerShown:false}} component={HomeTabs} />
       </Stack.Navigator>
     </NavigationContainer>
