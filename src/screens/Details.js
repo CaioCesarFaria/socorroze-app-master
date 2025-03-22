@@ -32,6 +32,25 @@ const categoryIcons = {
   Revisão: require("../../assets/icons/icon_revisao.png"),
 };
 
+const abrirWhatsApp = (numero, nomeFantasia) => {
+  const numeroLimpo = numero.replace(/\D/g, ""); // Remove qualquer caractere não numérico
+  const mensagem = encodeURIComponent(`Olá, encontrei sua mecânica "${nomeFantasia}" pelo aplicativo Socorro Zé. Poderia me atender agora?`);
+  const url = `https://wa.me/55${numeroLimpo}?text=${mensagem}`;
+
+  Linking.canOpenURL(url)
+    .then((supported) => {
+      if (supported) {
+        Linking.openURL(url);
+      } else {
+        Alert.alert("Erro", "Não foi possível abrir o WhatsApp. Verifique se o aplicativo está instalado.");
+      }
+    })
+    .catch(() => {
+      Alert.alert("Erro", "Ocorreu um problema ao tentar abrir o WhatsApp.");
+    });
+};
+
+
 export default function Details({ route }) {
   const navigation = useNavigation();
   const { id } = route.params; // Obtém o ID passado como parâmetro
@@ -211,12 +230,7 @@ export default function Details({ route }) {
             style={styles.helpButton}
             onPress={() => {
               if (mecanica.telefone) {
-                const mensagem = encodeURIComponent(
-                  `Olá, encontrei sua mecânica \"${mecanica.nomeFantasia}\" pelo aplicativo Socorro Zé. Você poderia me atender agora?`
-                );
-                Linking.openURL(
-                  `https://wa.me/${mecanica.telefone}?text=${mensagem}`
-                );
+                abrirWhatsApp(mecanica.telefone, mecanica.nomeFantasia);
               } else {
                 Alert.alert("Aviso", "Telefone não disponível!");
               }

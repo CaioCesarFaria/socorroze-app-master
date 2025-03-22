@@ -56,6 +56,25 @@ const categoriasPredefinidas = [
 
 moment.locale("pt-br");
 
+const abrirWhatsApp = (numero, nomeFantasia) => {
+  const numeroLimpo = numero.replace(/\D/g, ""); // Remove qualquer caractere não numérico
+  const mensagem = encodeURIComponent(`Olá, encontrei sua mecânica "${nomeFantasia}" pelo aplicativo Socorro Zé. Poderia me atender agora?`);
+  const url = `https://wa.me/55${numeroLimpo}?text=${mensagem}`;
+
+  Linking.canOpenURL(url)
+    .then((supported) => {
+      if (supported) {
+        Linking.openURL(url);
+      } else {
+        Alert.alert("Erro", "Não foi possível abrir o WhatsApp. Verifique se o aplicativo está instalado.");
+      }
+    })
+    .catch(() => {
+      Alert.alert("Erro", "Ocorreu um problema ao tentar abrir o WhatsApp.");
+    });
+};
+
+
 export default function Home() {
   const navigation = useNavigation();
   const db = getFirestore(app);
@@ -294,12 +313,7 @@ export default function Home() {
           style={styles.whatsappContainer}
           onPress={() => {
             if (item.telefone) {
-              const mensagem = encodeURIComponent(
-                `Olá, encontrei sua mecânica "${item.nomeFantasia}" pelo aplicativo Socorro Zé. Poderia me atender agora?`
-              );
-              Linking.openURL(
-                `https://wa.me/${item.telefone}?text=${mensagem}`
-              );
+              abrirWhatsApp(item.telefone, item.nomeFantasia);
             } else {
               Alert.alert("Aviso", "Telefone não disponível!");
             }
