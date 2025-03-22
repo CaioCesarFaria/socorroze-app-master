@@ -174,7 +174,7 @@ export default function NewClient() {
 
         // Obtenha a URL pública da imagem
         const downloadURL = await getDownloadURL(imageRef);
-        
+
         // Atualize o estado
         setSelectedImage(downloadURL);
         Alert.alert("Sucesso!", "Imagem carregada com sucesso!");
@@ -266,14 +266,14 @@ export default function NewClient() {
         source={require("../../assets/bgwhite.png")}
         style={styles.bgImagem}
         resizeMode="cover"
-      > 
-      <TouchableOpacity
-              style={styles.backButton}
-              onPress={() => navigation.goBack()}
-            >
-              <Ionicons name="arrow-back" size={28} color="#32345e" />
-              <Text style={styles.backButtonText}>Voltar</Text>
-            </TouchableOpacity>
+      >
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
+          <Ionicons name="arrow-back" size={28} color="#32345e" />
+          <Text style={styles.backButtonText}>Voltar</Text>
+        </TouchableOpacity>
         <ScrollView style={styles.scrolista}>
           <Text style={styles.title}>Cadastrar Nova Mecânica</Text>
           {/* Cidade */}
@@ -467,18 +467,25 @@ export default function NewClient() {
           />
           {/* 7. Checkboxes para Categorias */}
           <Text style={styles.label}>Categorias</Text>
-          {categoriasPredefinidas.map((categoria, index) => (
-            <TouchableOpacity
-              key={index}
-              onPress={() => toggleCategoria(categoria)}
-              style={[
-                styles.checkboxOption,
-                categorias.includes(categoria) && styles.checkboxSelected,
-              ]}
-            >
-              <Text>{categoria}</Text>
-            </TouchableOpacity>
-          ))}
+          <View style={styles.categoriasContainer}>
+            {categoriasPredefinidas.map((categoria, index) => (
+              <TouchableOpacity
+                key={index}
+                onPress={() => toggleCategoria(categoria)}
+                style={[
+                  styles.categoriaButton,
+                  categorias.includes(categoria) && styles.categoriaSelected,
+                ]}
+              >
+                <Text
+                  style={categorias.includes(categoria) && styles.categoriaText}
+                >
+                  {categoria}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
           <Text style={styles.label}>Endereço</Text>
           <TextInput
             style={styles.input}
@@ -520,11 +527,11 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     marginTop: 10,
     columnGap: 10,
-    marginLeft:10,
+    marginLeft: 10,
   },
-  backButtonText: { 
-    fontSize: 16, 
-    color: "#34325e" 
+  backButtonText: {
+    fontSize: 16,
+    color: "#34325e",
   },
   scrolista: {
     paddingHorizontal: 30,
@@ -555,13 +562,13 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   picker: {
-    height: "auto",
+    height: Platform.OS === "ios" ? 160 : 50,
     width: "100%",
-    opacity: 0.8,
     backgroundColor: "#F4B516",
     borderRadius: 10,
-    overflow: "hidden",
+    paddingHorizontal: 10,
     color: "#000",
+    marginBottom: 10,
   },
   pickerItem: {
     backgroundColor: "#F4B516",
@@ -600,4 +607,23 @@ const styles = StyleSheet.create({
   diaContainer: {
     marginBottom: 16,
   },
+  categoriasContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+    marginBottom: 16,
+  },
+  categoriaButton: {
+    padding: 10,
+    borderWidth: 1,
+    borderColor: "#007bff",
+    borderRadius: 20,
+  },
+  categoriaSelected: {
+    backgroundColor: "#007bff",
+  },
+  categoriaText: {
+    color: "white",
+  },
+  
 });

@@ -6,6 +6,8 @@ import {
   FlatList,
   TouchableOpacity,
   TextInput,
+  Platform,
+  StatusBar,
 } from "react-native";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
 import { useNavigation } from "@react-navigation/native";
@@ -86,7 +88,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 20,
-    marginTop: 10,
+    marginTop: Platform.OS === "ios" ? 50 : 10,
     columnGap: 10,
   },
   backButtonText: { 
