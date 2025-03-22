@@ -20,26 +20,37 @@
     ],
     "splash": {
       "image": "./assets/splashok.png"
-      
-      
     },
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
         "NSCameraUsageDescription": "Este aplicativo precisa acessar a câmera para tirar fotos.",
-        "NSLocationWhenInUseUsageDescription": "Precisamos da sua localização para oferecer serviços melhores."
-      }
+        "NSLocationWhenInUseUsageDescription": "Precisamos da sua localização para oferecer serviços melhores.",
+        "ITSAppUsesNonExemptEncryption": false
+      },
+      "bundleIdentifier": "com.socorroze.app"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "permissions": ["ACCESS_FINE_LOCATION", "CAMERA"]
+      "permissions": [
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.socorroze.app"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "newArchEnabled": true
+    "newArchEnabled": true,
+    "extra": {
+      "eas": {
+        "projectId": "5a37c570-dc2e-42e8-bebf-9fa5cdeb3789"
+      }
+    },
+    "owner": "321caioster"
   }
 }

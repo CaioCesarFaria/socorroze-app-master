@@ -113,16 +113,32 @@ export default function Home() {
   };
 
   const getLocation = async () => {
-    let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== "granted") {
-      setLocationError("Permissão de localização negada");
-      Alert.alert("Erro", "Permissão de localização negada");
-      return;
-    }
-
-    let location = await Location.getCurrentPositionAsync({});
-    setUserLocation(location.coords);
+    Alert.alert(
+      "Precisamos da sua localização",
+      "Vamos usar sua localização para encontrar mecânicas próximas de você. Deseja continuar?",
+      [
+        {
+          text: "Cancelar",
+          style: "cancel",
+        },
+        {
+          text: "Permitir",
+          onPress: async () => {
+            const { status } = await Location.requestForegroundPermissionsAsync();
+            if (status !== 'granted') {
+              setLocationError("Permissão de localização negada");
+              Alert.alert("Erro", "Permissão de localização negada.");
+              return;
+            }
+  
+            const location = await Location.getCurrentPositionAsync({});
+            setUserLocation(location.coords);
+          },
+        },
+      ]
+    );
   };
+  
 
   useEffect(() => {
     getLocation();

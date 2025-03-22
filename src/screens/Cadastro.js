@@ -135,7 +135,7 @@ export default function Cadastro() {
                     placeholder="Digite seu telefone com DDD"
                     autoCorrect={false}
                   />
-
+                  
                   <Text style={styles.inputLabel}>E-mail</Text>
                   <TextInput
                     style={styles.cadastroInput}
