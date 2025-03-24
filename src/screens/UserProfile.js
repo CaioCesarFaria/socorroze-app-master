@@ -21,8 +21,15 @@ import {
   deleteUser,
   EmailAuthProvider,
   reauthenticateWithCredential,
+  updatePassword,
 } from "firebase/auth";
-import { getFirestore, doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  updateDoc,
+  deleteDoc,
+} from "firebase/firestore";
 import app from "../firebase-config/firebasecofing";
 import { useNavigation } from "@react-navigation/native";
 
@@ -39,6 +46,11 @@ export default function UserProfile() {
   const [showModal, setShowModal] = useState(false);
   const [senhaDigitada, setSenhaDigitada] = useState("");
   const [confirmLoading, setConfirmLoading] = useState(false);
+  const [showSenhaModal, setShowSenhaModal] = useState(false);
+  const [senhaAtual, setSenhaAtual] = useState("");
+  const [novaSenha, setNovaSenha] = useState("");
+  const [confirmarNovaSenha, setConfirmarNovaSenha] = useState("");
+  const [alterandoSenha, setAlterandoSenha] = useState(false);
 
   useEffect(() => {
     carregarPerfil();
@@ -96,25 +108,28 @@ export default function UserProfile() {
       setLoading(false);
     }
   };
-  
+
   const confirmarExclusao = async () => {
     setConfirmLoading(true);
     try {
       const user = auth.currentUser;
-      const credential = EmailAuthProvider.credential(user.email, senhaDigitada);
-  
+      const credential = EmailAuthProvider.credential(
+        user.email,
+        senhaDigitada
+      );
+
       // Reautentica o usuário
       await reauthenticateWithCredential(user, credential);
-  
+
       // Exclui do Firestore
       const userRef = doc(db, "usuarios", user.uid);
       await deleteDoc(userRef); // agora deletando completamente o documento
-  
+
       // Exclui do Auth
       await deleteUser(user);
-  
+
       Alert.alert("Conta excluída", "Sua conta foi removida com sucesso.");
-  
+
       // Deslogar e redirecionar
       navigation.replace("Login");
     } catch (error) {
@@ -126,7 +141,38 @@ export default function UserProfile() {
       setShowModal(false);
     }
   };
-  
+
+  const handleAlterarSenha = async () => {
+    if (!senhaAtual || !novaSenha || !confirmarNovaSenha) {
+      Alert.alert("Erro", "Preencha todos os campos.");
+      return;
+    }
+
+    if (novaSenha !== confirmarNovaSenha) {
+      Alert.alert("Erro", "A nova senha e a confirmação não coincidem.");
+      return;
+    }
+
+    try {
+      setAlterandoSenha(true);
+      const user = auth.currentUser;
+      const credential = EmailAuthProvider.credential(user.email, senhaAtual);
+
+      await reauthenticateWithCredential(user, credential);
+      await updatePassword(user, novaSenha);
+
+      Alert.alert("Sucesso", "Senha atualizada com sucesso.");
+      setShowSenhaModal(false);
+      setSenhaAtual("");
+      setNovaSenha("");
+      setConfirmarNovaSenha("");
+    } catch (error) {
+      console.error("Erro ao alterar senha:", error);
+      Alert.alert("Erro", "Senha atual incorreta ou erro ao atualizar senha.");
+    } finally {
+      setAlterandoSenha(false);
+    }
+  };
 
   return (
     <ImageBackground
@@ -178,6 +224,16 @@ export default function UserProfile() {
               <Text style={styles.buttonText}>Excluir Conta</Text>
             </TouchableOpacity>
 
+            <TouchableOpacity
+              style={[
+                styles.button,
+                { backgroundColor: "#007bff", marginTop: 10 },
+              ]}
+              onPress={() => setShowSenhaModal(true)}
+            >
+              <Text style={styles.buttonText}>Alterar Senha</Text>
+            </TouchableOpacity>
+
             <TouchableOpacity style={styles.button} onPress={handleSalvar}>
               {loading ? (
                 <ActivityIndicator size="small" color="#ffffff" />
@@ -224,6 +280,59 @@ export default function UserProfile() {
             </View>
           </View>
         )}
+        {showSenhaModal && (
+  <View style={styles.modalOverlay}>
+    <View style={styles.modalContent}>
+      <Text style={styles.modalTitle}>Alterar Senha</Text>
+
+      <TextInput
+        style={styles.input}
+        placeholder="Senha atual"
+        secureTextEntry
+        value={senhaAtual}
+        onChangeText={setSenhaAtual}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Nova senha"
+        secureTextEntry
+        value={novaSenha}
+        onChangeText={setNovaSenha}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Confirmar nova senha"
+        secureTextEntry
+        value={confirmarNovaSenha}
+        onChangeText={setConfirmarNovaSenha}
+      />
+
+      <View style={styles.modalButtons}>
+        <TouchableOpacity
+          style={[styles.button, { backgroundColor: "#ccc" }]}
+          onPress={() => {
+            setShowSenhaModal(false);
+            setSenhaAtual("");
+            setNovaSenha("");
+            setConfirmarNovaSenha("");
+          }}
+        >
+          <Text style={styles.buttonText}>Cancelar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.button, { backgroundColor: "#007bff" }]}
+          onPress={handleAlterarSenha}
+          disabled={alterandoSenha}
+        >
+          <Text style={styles.buttonText}>
+            {alterandoSenha ? "Atualizando..." : "Confirmar"}
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  </View>
+)}
+
       </SafeAreaView>
     </ImageBackground>
   );
@@ -313,5 +422,4 @@ const styles = StyleSheet.create({
     marginTop: 20,
     gap: 10,
   },
-  
 });

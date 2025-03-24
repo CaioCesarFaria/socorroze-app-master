@@ -113,7 +113,7 @@ export default function Home() {
         }
       }
     } catch (error) {
-      Alert.alert("Erro", "Falha ao obter usuário.");
+      console.log("Usuário autenticado, mas documento do Firestore ainda não existe.");
     }
   };
 
