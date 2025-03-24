@@ -104,8 +104,11 @@ export default function Home() {
         const userDoc = await getDoc(doc(db, "usuarios", user.uid));
         if (userDoc.exists()) {
           const role = userDoc.data().role || "user";
+          const cidades = userDoc.data().cidadesResponsaveis || [];
           setNomeUsuario(userDoc.data().nome);
           setUserRole(role);
+          setCidadesAdmin(cidades);
+          if (cidades.length > 0) setCidadeSelecionada(cidades[0]);
           console.log("Role do usuário:", role);
         }
       }

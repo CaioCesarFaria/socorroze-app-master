@@ -38,6 +38,8 @@ export default function AdminUsers() {
   const [confirmarSenha, setConfirmarSenha] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const cidadesDisponiveis = ["Anápolis", "Rio de Janeiro", "Goiânia"];
+  const [cidadesSelecionadas, setCidadesSelecionadas] = useState([]);
 
   const navigation = useNavigation();
   const auth = getAuth(app);
@@ -46,7 +48,7 @@ export default function AdminUsers() {
   const getUserRole = async (userId) => {
     const userRef = doc(db, "usuarios", userId);
     let userSnap = await getDoc(userRef);
-    
+
     // Se não carregar de primeira, tenta novamente após 1 segundo
     let tentativas = 0;
     while (!userSnap.exists() && tentativas < 3) {
@@ -54,56 +56,72 @@ export default function AdminUsers() {
       userSnap = await getDoc(userRef);
       tentativas++;
     }
-  
+
     if (!userSnap.exists()) {
-      throw new Error("Erro: Conta do usuário atual não encontrada no Firestore.");
+      throw new Error(
+        "Erro: Conta do usuário atual não encontrada no Firestore."
+      );
     }
-  
+
     return userSnap.data().role;
   };
-  
+  const toggleCidade = (cidade) => {
+    setCidadesSelecionadas((prev) =>
+      prev.includes(cidade)
+        ? prev.filter((c) => c !== cidade)
+        : [...prev, cidade]
+    );
+  };
+
   const handleCadastroAdmin = async () => {
     if (senha !== confirmarSenha) {
       alert("As senhas não coincidem!");
       return;
     }
-  
+
     try {
       const user = auth.currentUser;
       if (!user) {
         alert("Usuário não autenticado.");
         return;
       }
-  
+
       const role = await getUserRole(user.uid);
       console.log("Role do usuário logado:", role);
-  
+
       if (role !== "master") {
-        alert("Permissão negada. Apenas usuários master podem criar administradores.");
+        alert(
+          "Permissão negada. Apenas usuários master podem criar administradores."
+        );
         return;
       }
-  
+
       const signInMethods = await fetchSignInMethodsForEmail(auth, email);
       if (signInMethods.length > 0) {
         alert("Este e-mail já está em uso.");
         return;
       }
-  
-      const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
+
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        senha
+      );
       const newUserId = userCredential.user.uid;
-      
+
       // Salva os dados do novo admin
       const userDoc = doc(db, "usuarios", newUserId);
       console.log("Tentando salvar usuário no caminho:", userDoc.path);
-      
+
       await setDoc(userDoc, {
         nome: nome || "",
         cpf: cpf || "",
         telefone: telefone || "",
         email: email,
-        role: "admin"
+        role: "admin",
+        cidadesResponsaveis: cidadesSelecionadas,
       });
-  
+
       Alert.alert("Sucesso", "Administrador cadastrado com sucesso!");
       navigation.goBack();
     } catch (error) {
@@ -111,7 +129,6 @@ export default function AdminUsers() {
       alert(error.message);
     }
   };
-  
 
   return (
     <GestureHandlerRootView>
@@ -218,6 +235,43 @@ export default function AdminUsers() {
                         color="gray"
                       />
                     </TouchableOpacity>
+                  </View>
+                  <Text style={styles.inputLabel}>
+                    Cidades que esse admin irá gerenciar:
+                  </Text>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      flexWrap: "wrap",
+                      gap: 10,
+                      marginBottom: 16,
+                    }}
+                  >
+                    {cidadesDisponiveis.map((cidade, index) => (
+                      <TouchableOpacity
+                        key={index}
+                        onPress={() => toggleCidade(cidade)}
+                        style={{
+                          padding: 10,
+                          borderRadius: 10,
+                          borderWidth: 1,
+                          borderColor: "#C54343",
+                          backgroundColor: cidadesSelecionadas.includes(cidade)
+                            ? "#C54343"
+                            : "#fff",
+                        }}
+                      >
+                        <Text
+                          style={{
+                            color: cidadesSelecionadas.includes(cidade)
+                              ? "#fff"
+                              : "#000",
+                          }}
+                        >
+                          {cidade}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
                   </View>
 
                   <TouchableOpacity onPress={handleCadastroAdmin}>
