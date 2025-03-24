@@ -368,6 +368,7 @@ export default function Home() {
           <Text style={styles.filterTitle}>
             Busque por categoria de serviços
           </Text>
+          <View style={styles.categoriesWrapperBox}>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -387,6 +388,7 @@ export default function Home() {
               </TouchableOpacity>
             ))}
           </ScrollView>
+          </View>
           {selectedCategory && (
             <TouchableOpacity onPress={() => setSelectedCategory(null)}>
               <Text style={styles.clearFilterText}>Limpar filtro</Text>
@@ -439,13 +441,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     padding: 10,
-    
     borderRadius: 8,
     shadowColor: "#000",
-    
-    
-    
-    
     marginBottom: 10,
   },
   
@@ -465,6 +462,14 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingHorizontal: 20,
   },
+  categoriesWrapperBox: {
+    backgroundColor: "#fff",
+    borderRadius: 20,
+    paddingVertical: 8,
+    paddingHorizontal: 5,
+    marginBottom: 10,
+    overflow: "hidden",
+  },  
   filterTitle: {
     fontSize: 14,
     fontWeight: "bold",
