@@ -35,7 +35,8 @@ const categoryIcons = {
 const abrirWhatsApp = (numero, nomeFantasia) => {
   const numeroLimpo = numero.replace(/\D/g, ""); // Remove qualquer caractere não numérico
   const mensagem = encodeURIComponent(`Olá, encontrei sua mecânica "${nomeFantasia}" pelo aplicativo Socorro Zé. Poderia me atender agora?`);
-  const url = `https://wa.me/55${numeroLimpo}?text=${mensagem}`;
+  const url = `whatsapp://send?phone=55${numeroLimpo}&text=${mensagem}`;
+
 
   Linking.canOpenURL(url)
     .then((supported) => {

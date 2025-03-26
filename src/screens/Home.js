@@ -36,13 +36,13 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 const calendarIcon = require("../../assets/icons/icon_calendar.png");
 const categoryIcons = {
-  Mecânica: require("../../assets/icons/icon_mecanica.svg"),
-  Elétrica: require("../../assets/icons/icon_eletrica.svg"),
-  Lanternagem: require("../../assets/icons/icon_lanternagem.svg"),
-  Guincho: require("../../assets/icons/icon_guincho.svg"),
-  Borracharia: require("../../assets/icons/icon_borracharia.svg"),
-  Pintura: require("../../assets/icons/icon_pintura.svg"),
-  Revisão: require("../../assets/icons/icon_revisao.svg"),
+  Mecânica: require("../../assets/icons/icon_mecanica.png"),
+  Elétrica: require("../../assets/icons/icon_eletrica.png"),
+  Lanternagem: require("../../assets/icons/icon_lanternagem.png"),
+  Guincho: require("../../assets/icons/icon_guincho.png"),
+  Borracharia: require("../../assets/icons/icon_borracharia.png"),
+  Pintura: require("../../assets/icons/icon_pintura.png"),
+  Revisão: require("../../assets/icons/icon_revisao.png"),
 };
 const categoriasPredefinidas = [
   "Borracharia",
@@ -59,7 +59,8 @@ moment.locale("pt-br");
 const abrirWhatsApp = (numero, nomeFantasia) => {
   const numeroLimpo = numero.replace(/\D/g, ""); // Remove qualquer caractere não numérico
   const mensagem = encodeURIComponent(`Olá, encontrei sua mecânica "${nomeFantasia}" pelo aplicativo Socorro Zé. Poderia me atender agora?`);
-  const url = `https://wa.me/55${numeroLimpo}?text=${mensagem}`;
+  const url = `whatsapp://send?phone=55${numeroLimpo}&text=${mensagem}`;
+
 
   Linking.canOpenURL(url)
     .then((supported) => {
@@ -469,6 +470,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
     marginBottom: 10,
     overflow: "hidden",
+    
   },  
   filterTitle: {
     fontSize: 14,
@@ -486,6 +488,7 @@ const styles = StyleSheet.create({
   categoryItem: {
     alignItems: "center",
     marginRight: 16,
+    
   },
   categoryIcon: {
     width: 50,

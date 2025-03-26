@@ -2,14 +2,11 @@
   "expo": {
     "name": "socorrozeapp",
     "slug": "socorrozeapp",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "permissions": [
-      "MEDIA_LIBRARY",
-      "CAMERA"
-    ],
+    "permissions": ["MEDIA_LIBRARY", "CAMERA"],
     "plugins": [
       [
         "expo-image-picker",
@@ -31,8 +28,9 @@
       "bundleIdentifier": "com.socorroze.app"
     },
     "android": {
+      "versionCode": 2,
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/icon_app.png",
         "backgroundColor": "#ffffff"
       },
       "permissions": [
@@ -40,7 +38,23 @@
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO"
       ],
-      "package": "com.socorroze.app"
+      "package": "com.socorroze.app",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "data": [
+            {
+              "scheme": "https",
+              "host": "wa.me"
+            },
+            {
+              "scheme": "https",
+              "host": "api.whatsapp.com"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
