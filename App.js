@@ -32,9 +32,9 @@ export default function App() {
   useEffect(() => {
     const checkTutorial = async () => {
       const visto = await AsyncStorage.getItem("@tutorialVisto");
-      setTutorialVisto(false);
+      setTutorialVisto(visto === "true");
     };
-
+    
     checkTutorial();
   }, []);
 
