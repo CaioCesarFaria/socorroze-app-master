@@ -32,7 +32,7 @@ export default function App() {
   useEffect(() => {
     const checkTutorial = async () => {
       const visto = await AsyncStorage.getItem("@tutorialVisto");
-      setTutorialVisto(visto === "true");
+      setTutorialVisto(false);
     };
 
     checkTutorial();
@@ -60,27 +60,22 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator>
-        {/* Se o tutorial ainda não foi visto, exibe ele primeiro */}
-        {!tutorialVisto ? (
-          <Stack.Screen name="Tutorial" component={Tutorial} options={{ headerShown: false }} />
-        ) : (
-          <>
-            <Stack.Screen name="Welcome" options={{ headerShown: false }} component={Welcome} />
-            <Stack.Screen name="Cadastro" options={{ headerShown: false }} component={Cadastro} />
-            <Stack.Screen name="Login" options={{ headerShown: false }} component={Login} />
-            <Stack.Screen name="HomeAdm" options={{ headerShown: false }} component={HomeAdm} />
-            <Stack.Screen name="NewClient" options={{ headerShown: false }} component={NewClient} />
-            <Stack.Screen name="TermosDePrivacidade" options={{ headerShown: false }} component={TermosDePrivacidade} />
-            <Stack.Screen name="Details" options={{ headerShown: false }} component={Details} />
-            <Stack.Screen name="EsqueciSenha" component={EsqueciSenha} />
-            <Stack.Screen name="ListClient" options={{ headerShown: false }} component={ListClient} />
-            <Stack.Screen name="AdminUsers" options={{ headerShown: false }} component={AdminUsers} />
-            <Stack.Screen name="UpdateClient" options={{ headerShown: false }} component={UpdateClient} />
-            <Stack.Screen name="HomeTabs" options={{ headerShown: false }} component={HomeTabs} />
-          </>
-        )}
-      </Stack.Navigator>
+      <Stack.Navigator initialRouteName={tutorialVisto ? "Welcome" : "Tutorial"}>
+  <Stack.Screen name="Tutorial" component={Tutorial} options={{ headerShown: false }} />
+  <Stack.Screen name="Welcome" component={Welcome} options={{ headerShown: false }} />
+  <Stack.Screen name="Cadastro" component={Cadastro} options={{ headerShown: false }} />
+  <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
+  <Stack.Screen name="HomeAdm" component={HomeAdm} options={{ headerShown: false }} />
+  <Stack.Screen name="NewClient" component={NewClient} options={{ headerShown: false }} />
+  <Stack.Screen name="TermosDePrivacidade" component={TermosDePrivacidade} options={{ headerShown: false }} />
+  <Stack.Screen name="Details" component={Details} options={{ headerShown: false }} />
+  <Stack.Screen name="EsqueciSenha" component={EsqueciSenha} />
+  <Stack.Screen name="ListClient" component={ListClient} options={{ headerShown: false }} />
+  <Stack.Screen name="AdminUsers" component={AdminUsers} options={{ headerShown: false }} />
+  <Stack.Screen name="UpdateClient" component={UpdateClient} options={{ headerShown: false }} />
+  <Stack.Screen name="HomeTabs" component={HomeTabs} options={{ headerShown: false }} />
+</Stack.Navigator>
+
     </NavigationContainer>
   );
 }

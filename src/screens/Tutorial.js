@@ -15,31 +15,34 @@ const slides = [
     id: 1,
     title: "Bem-vindo ao Socorro Zé!",
     description: "Aqui você encontra mecânicos próximos para te ajudar a qualquer momento.",
-    
+    image: require("../../assets/tutorial_1.png"),
   },
   {
     id: 2,
     title: "Como Funciona?",
-    description: "Basta permitir sua localização para visualizar os mecânicos mais próximos de você.",
+    description: " Permita sua localização para visualizar os mecânicos mais próximos de você.",
+    image: require("../../assets/tutorial_2.png"),
     
   },
   {
     id: 3,
     title: "Entre em Contato",
     description: "Toque em uma mecânica para ver os detalhes e falar direto pelo WhatsApp.",
+    image: require("../../assets/tutorial_3.png"),
     
   },
   {
     id: 4,
     title: "Avaliações em Breve",
     description: "Em breve, você poderá avaliar mecânicas e ajudar outros usuários!",
+    image: require("../../assets/tutorial_4.png"),
     
   },
   {
     id: 5,
     title: "Vamos começar?",
     description: "Agora que você sabe tudo, vamos lá!",
-    // image: require("../../assets/tutorial5.png"),
+    image: require("../../assets/tutorial_5.png"),
   },
 ];
 
@@ -53,21 +56,22 @@ export default function Tutorial() {
       setCurrentIndex(currentIndex + 1);
     } else {
       await AsyncStorage.setItem("@tutorialVisto", "true");
-      navigation.replace("HomeTabs"); // Direciona para a home após o tutorial
+      navigation.replace("Welcome"); // Direciona para a home após o tutorial
     }
   };
 
   // Pula o tutorial direto para a home
   const handleSkip = async () => {
     await AsyncStorage.setItem("@tutorialVisto", "true");
-    navigation.replace("HomeTabs");
+    navigation.replace("Welcome");
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <Image source={slides[currentIndex].image} style={styles.image} />
       <Text style={styles.title}>{slides[currentIndex].title}</Text>
       <Text style={styles.description}>{slides[currentIndex].description}</Text>
+      <Image source={slides[currentIndex].image} style={styles.image} />
+      
 
       <View style={styles.buttonContainer}>
         {currentIndex < slides.length - 1 && (
@@ -107,8 +111,8 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   description: {
-    fontSize: 16,
-    color: "#666",
+    fontSize: 18,
+    color: "#000",
     textAlign: "center",
     marginTop: 10,
     paddingHorizontal: 20,
@@ -131,12 +135,14 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   nextButton: {
-    backgroundColor: "#007BFF",
+    backgroundColor: "#fff",
     padding: 12,
     borderRadius: 8,
+    borderWidth:1,
+    borderColor: "#c54343"
   },
   nextButtonText: {
-    color: "#fff",
+    color: "#C54343",
     fontSize: 16,
     fontWeight: "bold",
   },

@@ -36,13 +36,13 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 const calendarIcon = require("../../assets/icons/icon_calendar.png");
 const categoryIcons = {
-  Mecânica: require("../../assets/icons/icon_mecanica.png"),
-  Elétrica: require("../../assets/icons/icon_eletrica.png"),
-  Lanternagem: require("../../assets/icons/icon_lanternagem.png"),
-  Guincho: require("../../assets/icons/icon_guincho.png"),
-  Borracharia: require("../../assets/icons/icon_borracharia.png"),
-  Pintura: require("../../assets/icons/icon_pintura.png"),
-  Revisão: require("../../assets/icons/icon_revisao.png"),
+  Mecânica: require("../../assets/icons/icon_mecanica.svg"),
+  Elétrica: require("../../assets/icons/icon_eletrica.svg"),
+  Lanternagem: require("../../assets/icons/icon_lanternagem.svg"),
+  Guincho: require("../../assets/icons/icon_guincho.svg"),
+  Borracharia: require("../../assets/icons/icon_borracharia.svg"),
+  Pintura: require("../../assets/icons/icon_pintura.svg"),
+  Revisão: require("../../assets/icons/icon_revisao.svg"),
 };
 const categoriasPredefinidas = [
   "Borracharia",
