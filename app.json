@@ -4,7 +4,7 @@
     "slug": "socorrozeapp",
     "version": "1.0.3",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/icon_app.png",
     "userInterfaceStyle": "light",
 
     
@@ -26,7 +26,8 @@
 
     
     "ios": {
-      "supportsTablet": true,
+      "buildNumber": "2",
+      "supportsTablet": false,
       "infoPlist": {
         "NSCameraUsageDescription": "Este aplicativo precisa acessar a câmera para tirar fotos.",
         "NSLocationWhenInUseUsageDescription": "Precisamos da sua localização para oferecer serviços melhores.",
@@ -34,6 +35,7 @@
         "LSApplicationQueriesSchemes": ["whatsapp"]
       },
       "bundleIdentifier": "com.socorroze.app"
+      
     },
 
     
