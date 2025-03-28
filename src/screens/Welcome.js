@@ -78,7 +78,8 @@ const styles = StyleSheet.create({
         marginBottom:10,
         fontSize:26,
         textAlign:'center',
-        fontWeight:'bold'
+        fontWeight:'bold',
+        paddingHorizontal:40,
     },
     subtitleWelcome: {
         color:"#27294A",
@@ -86,7 +87,7 @@ const styles = StyleSheet.create({
         marginBottom:40,
         fontSize:16,
         textAlign:'center',
-        paddingHorizontal:'10%'
+        paddingHorizontal:10,
     },
     buttonCadastro: {
         backgroundColor:"#C54343",
@@ -94,7 +95,7 @@ const styles = StyleSheet.create({
         width:200,
         fontSize:24,
         paddingHorizontal:2,
-        paddingVertical:3,
+        paddingVertical:8,
         alignItems:'center',
         justifyContent:'center',
         marginBottom:30,
@@ -107,7 +108,7 @@ const styles = StyleSheet.create({
         width:200,
         fontSize:24,
         paddingHorizontal:2,
-        paddingVertical:3,
+        paddingVertical:8,
         alignItems:'center',
         justifyContent:'center',
         marginBottom:30,

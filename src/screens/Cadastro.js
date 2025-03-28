@@ -245,7 +245,7 @@ const styles = StyleSheet.create({
   },
   backButton: {
     paddingTop:25,
-    paddingLeft:5,
+    paddingLeft:25,
   },
   logoWelcome: {
     width: 100,
@@ -264,11 +264,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   containerCadastro: {
-    // Aqui você pode adicionar estilos para o container, se necessário
+    paddingHorizontal:32,
   },
   inputLabel: {
     marginBottom: 8,
-    fontSize: 16,
+    fontSize: 18,
     paddingLeft: 15,
     color: "#32345E",
   },
@@ -303,7 +303,7 @@ const styles = StyleSheet.create({
   checkboxContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginVertical: 10,
+    marginVertical: 15,
   },
   checkboxOption: {
     flexDirection: "row",
@@ -324,12 +324,14 @@ const styles = StyleSheet.create({
 
   cadastrarButton: {
     textAlign: "center",
-    padding: 10,
+    fontSize:18,
     backgroundColor: "#C54343",
     color: "#FFF",
-    borderRadius: 50,
+    borderRadius: 12,
     width: "50%",
     alignSelf: "center",
     fontWeight: "bold",
+    paddingVertical:12,
+    marginBottom:20,
   },
 });

@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
   },
   backButton: {
     paddingTop: 25,
-    paddingLeft: 5,
+    paddingLeft: 25,
   },
   logoWelcome: {
     width: 150,
@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: "10%",
   },
   boxInputs: {
-    paddingHorizontal: 10,
+    paddingHorizontal: 32,
   },
   inputLabel: {
     marginBottom: 8,
@@ -216,12 +216,20 @@ const styles = StyleSheet.create({
   switchContainer: {
     flexDirection: "row-reverse",
     alignItems: "center",
+    paddingHorizontal:32,
+    marginBottom:30,
+    
   },
   switchText: {
     color: "#32345E",
     fontSize: 14,
     fontStyle: "italic",
     fontWeight: "bold",
+    
+  },
+  btnEsqueciSenha: {
+    marginRight:30,
+    marginBottom:30,
   },
   esqueciSenhaText: {
     color: "#32345E",
@@ -230,9 +238,10 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   button: {
+    
     backgroundColor: "#C54343",
     padding: 16,
-    borderRadius: 50,
+    borderRadius: 12,
     alignItems: "center",
     marginHorizontal: "10%",
     marginTop: 10,
