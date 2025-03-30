@@ -56,19 +56,6 @@ const categoriasPredefinidas = [
 
 moment.locale("pt-br");
 
-const abrirWhatsApp = (numero, nomeFantasia) => {
-  const numeroLimpo = numero.replace(/\D/g, ""); // Remove qualquer caractere não numérico
-  const mensagem = encodeURIComponent(`Olá, encontrei sua mecânica "${nomeFantasia}" pelo aplicativo Socorro Zé. Poderia me atender agora?`);
-  const url = `https://wa.me/55${numeroLimpo}?text=${mensagem}`;
-
-
-  Linking.openURL(url)
-    .catch(() => {
-      Alert.alert("Erro", "Ocorreu um problema ao tentar abrir o WhatsApp.");
-    });
-};
-
-
 export default function Home() {
   const navigation = useNavigation();
   const db = getFirestore(app);
@@ -81,7 +68,8 @@ export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
   const [locationError, setLocationError] = useState("");
-  
+  const [cidadesAdmin, setCidadesAdmin] = useState([]);
+  const [cidadeSelecionada, setCidadeSelecionada] = useState(null);
   const handleLogout = async () => {
     try {
       await auth.signOut();
@@ -90,7 +78,32 @@ export default function Home() {
       Alert.alert("Erro", "Falha ao fazer logout.");
     }
   };
+  const abrirWhatsApp = (numero, nomeFantasia) => {
+    const auth = getAuth(); // ✅ pega o auth aqui mesmo
 
+    if (!auth.currentUser) {
+      // ✅ Verificação de login
+      Alert.alert(
+        "Atenção",
+        "Você precisa estar logado para entrar em contato via WhatsApp.",
+        [
+          { text: "Cancelar", style: "cancel" },
+          { text: "Fazer login", onPress: () => navigation.navigate("Login") },
+        ]
+      );
+      return;
+    }
+
+    const numeroLimpo = numero.replace(/\D/g, ""); // Remove qualquer caractere não numérico
+    const mensagem = encodeURIComponent(
+      `Olá, encontrei sua mecânica "${nomeFantasia}" pelo aplicativo Socorro Zé. Poderia me atender agora?`
+    );
+    const url = `https://wa.me/55${numeroLimpo}?text=${mensagem}`;
+
+    Linking.openURL(url).catch(() => {
+      Alert.alert("Erro", "Ocorreu um problema ao tentar abrir o WhatsApp.");
+    });
+  };
   const fetchUsuario = async () => {
     try {
       const user = auth.currentUser;
@@ -107,7 +120,9 @@ export default function Home() {
         }
       }
     } catch (error) {
-      console.log("Usuário autenticado, mas documento do Firestore ainda não existe.");
+      console.log(
+        "Usuário autenticado, mas documento do Firestore ainda não existe."
+      );
     }
   };
 
@@ -140,13 +155,14 @@ export default function Home() {
         {
           text: "Permitir",
           onPress: async () => {
-            const { status } = await Location.requestForegroundPermissionsAsync();
-            if (status !== 'granted') {
+            const { status } =
+              await Location.requestForegroundPermissionsAsync();
+            if (status !== "granted") {
               setLocationError("Permissão de localização negada");
               Alert.alert("Erro", "Permissão de localização negada.");
               return;
             }
-  
+
             const location = await Location.getCurrentPositionAsync({});
             setUserLocation(location.coords);
           },
@@ -154,7 +170,6 @@ export default function Home() {
       ]
     );
   };
-  
 
   useEffect(() => {
     getLocation();
@@ -247,7 +262,23 @@ export default function Home() {
     return (
       <TouchableOpacity
         style={styles.card}
-        onPress={() => navigation.navigate("Details", { id: item.id })}
+        onPress={() => {
+          if (!auth.currentUser) {
+            Alert.alert(
+              "Atenção",
+              "Você precisa estar logado para ver os detalhes da mecânica.",
+              [
+                { text: "Cancelar", style: "cancel" },
+                {
+                  text: "Fazer login",
+                  onPress: () => navigation.navigate("Login"),
+                },
+              ]
+            );
+            return;
+          }
+          navigation.navigate("Details", { id: item.id });
+        }}
       >
         <View style={styles.leftContainer}>
           <View style={styles.imageContainer}>
@@ -340,17 +371,15 @@ export default function Home() {
       >
         <View style={styles.headerContainer}>
           {/* ✅ Botão que apenas "admin" e "master" podem ver */}
-        {userRole === "admin" || userRole === "master" ? (
-          <TouchableOpacity
-            onPress={() => navigation.navigate("HomeAdm")}
-            style={styles.backButton}
-          >
-            <Ionicons name="arrow-back" size={24} color="#000" />
-            <Text style={styles.backButtonText}>
-              Voltar para HomeAdm
-            </Text>
-          </TouchableOpacity>
-        ) : null}
+          {userRole === "admin" || userRole === "master" ? (
+            <TouchableOpacity
+              onPress={() => navigation.navigate("HomeAdm")}
+              style={styles.backButton}
+            >
+              <Ionicons name="arrow-back" size={24} color="#000" />
+              <Text style={styles.backButtonText}>Voltar para HomeAdm</Text>
+            </TouchableOpacity>
+          ) : null}
           <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
             <Ionicons name="exit-outline" size={28} color="#C54343" />
             <Text style={styles.logoutButtonText}>Sair</Text>
@@ -363,25 +392,25 @@ export default function Home() {
             Busque por categoria de serviços
           </Text>
           <View style={styles.categoriesWrapperBox}>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.categoriesContainer}
-          >
-            {categoriasPredefinidas.map((cat) => (
-              <TouchableOpacity
-                key={cat}
-                style={styles.categoryItem}
-                onPress={() => setSelectedCategory(cat)}
-              >
-                <Image
-                  source={categoryIcons[cat]}
-                  style={styles.categoryIcon}
-                />
-                <Text style={styles.categoryText}>{cat}</Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.categoriesContainer}
+            >
+              {categoriasPredefinidas.map((cat) => (
+                <TouchableOpacity
+                  key={cat}
+                  style={styles.categoryItem}
+                  onPress={() => setSelectedCategory(cat)}
+                >
+                  <Image
+                    source={categoryIcons[cat]}
+                    style={styles.categoryIcon}
+                  />
+                  <Text style={styles.categoryText}>{cat}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
           </View>
           {selectedCategory && (
             <TouchableOpacity onPress={() => setSelectedCategory(null)}>
@@ -416,7 +445,7 @@ const styles = StyleSheet.create({
     paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
   headerContainer: {
-    flexDirection:'column',
+    flexDirection: "column",
     paddingHorizontal: 20,
     paddingTop: 10,
   },
@@ -439,7 +468,7 @@ const styles = StyleSheet.create({
     shadowColor: "#000",
     marginBottom: 10,
   },
-  
+
   backButtonText: {
     fontSize: 16,
     color: "#000",
@@ -463,8 +492,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
     marginBottom: 10,
     overflow: "hidden",
-    
-  },  
+  },
   filterTitle: {
     fontSize: 14,
     fontWeight: "bold",
@@ -481,7 +509,6 @@ const styles = StyleSheet.create({
   categoryItem: {
     alignItems: "center",
     marginRight: 16,
-    
   },
   categoryIcon: {
     width: 50,

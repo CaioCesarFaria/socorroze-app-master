@@ -26,11 +26,11 @@
 
     
     "ios": {
-      "buildNumber": "2",
+      "buildNumber": "3",
       "supportsTablet": false,
       "infoPlist": {
         "NSCameraUsageDescription": "Este aplicativo precisa acessar a câmera para tirar fotos.",
-        "NSLocationWhenInUseUsageDescription": "Precisamos da sua localização para oferecer serviços melhores.",
+        "NSLocationWhenInUseUsageDescription": "Usamos sua localização para mostrar as mecânicas mais próximas de você em tempo real.",
         "ITSAppUsesNonExemptEncryption": false,
         "LSApplicationQueriesSchemes": ["whatsapp"]
       },
@@ -40,7 +40,7 @@
 
     
     "android": {
-      "versionCode": 10,
+      "versionCode": 11,
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon_app.png",
         "backgroundColor": "#ffffff"
