@@ -384,7 +384,7 @@ export default function Home() {
             <Ionicons name="exit-outline" size={28} color="#C54343" />
             <Text style={styles.logoutButtonText}>Sair</Text>
           </TouchableOpacity>
-          <Text style={styles.textSaudacao}>Olá, {nomeUsuario}!</Text>
+          <Text style={styles.textSaudacao}>{auth.currentUser ? `Olá, ${nomeUsuario}!` : 'Olá, bem-vindo ao Socorro Zé!'}</Text>
         </View>
 
         <View style={styles.categoriesWrapper}>
@@ -420,7 +420,7 @@ export default function Home() {
         </View>
 
         <View style={styles.containerMecanicas}>
-          <Text style={styles.title}>Mecânicas Cadastradas</Text>
+          <Text style={styles.title}>Mecânicas Próximas</Text>
           <FlatList
             data={displayedMecanicas}
             keyExtractor={(item) => item.id}

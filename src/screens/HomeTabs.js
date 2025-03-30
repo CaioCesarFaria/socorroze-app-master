@@ -1,8 +1,9 @@
 // HomeTabs.js (com BottomTab estilizado)
 import React from "react";
+import { Alert } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Ionicons from "@expo/vector-icons/Ionicons";
-
+import { auth } from "../firebase-config/firebasecofing";
 import Home from "./Home";
 import UserProfile from "./UserProfile";
 import UserHistory from "./UserHistory";
@@ -38,23 +39,54 @@ export default function HomeTabs() {
         }}
       />
       <Tab.Screen
-        name="Historico"
-        component={UserHistory}
-        options={{
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? "time" : "time-outline"} color={color} size={24} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Perfil"
-        component={UserProfile}
-        options={{
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? "person" : "person-outline"} color={color} size={24} />
-          ),
-        }}
-      />
+  name="Historico"
+  component={UserHistory}
+  listeners={({ navigation }) => ({
+    tabPress: e => {
+      if (!auth.currentUser) {
+        e.preventDefault();
+        Alert.alert(
+          "Atenção",
+          "Você precisa estar logado para acessar o histórico.",
+          [
+            { text: "Cancelar", style: "cancel" },
+            { text: "Fazer login", onPress: () => navigation.navigate("Login") }
+          ]
+        );
+      }
+    }
+  })}
+  options={{
+    tabBarIcon: ({ color, focused }) => (
+      <Ionicons name={focused ? "time" : "time-outline"} color={color} size={24} />
+    ),
+  }}
+/>
+
+<Tab.Screen
+  name="Perfil"
+  component={UserProfile}
+  listeners={({ navigation }) => ({
+    tabPress: e => {
+      if (!auth.currentUser) {
+        e.preventDefault();
+        Alert.alert(
+          "Atenção",
+          "Você precisa estar logado para acessar o perfil.",
+          [
+            { text: "Cancelar", style: "cancel" },
+            { text: "Fazer login", onPress: () => navigation.navigate("Login") }
+          ]
+        );
+      }
+    }
+  })}
+  options={{
+    tabBarIcon: ({ color, focused }) => (
+      <Ionicons name={focused ? "person" : "person-outline"} color={color} size={24} />
+    ),
+  }}
+/>
     </Tab.Navigator>
   );
 }
