@@ -91,7 +91,7 @@ export default function Login() {
             >
               <TouchableOpacity
                 style={styles.backButton}
-                onPress={() => navigation.goBack()}
+                onPress={() => navigation.navigate("Welcome")}
               >
                 <Ionicons name="arrow-back" size={32} color="#C54343" />
               </TouchableOpacity>
