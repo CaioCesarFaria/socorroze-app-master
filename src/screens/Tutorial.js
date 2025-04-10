@@ -13,7 +13,7 @@ import { useNavigation } from "@react-navigation/native";
 const slides = [
   {
     id: 1,
-    title: "Bem-vindo ao Socorro Zé!",
+    title: "Bem-vindo ao AUTOZAP!",
     description: "Aqui você encontra mecânicos próximos para te ajudar a qualquer momento.",
     image: require("../../assets/tutorial_1.png"),
   },

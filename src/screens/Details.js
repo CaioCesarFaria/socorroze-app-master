@@ -34,7 +34,7 @@ const categoryIcons = {
 
 const abrirWhatsApp = (numero, nomeFantasia) => {
   const numeroLimpo = numero.replace(/\D/g, ""); // Remove qualquer caractere não numérico
-  const mensagem = encodeURIComponent(`Olá, encontrei sua mecânica "${nomeFantasia}" pelo aplicativo Socorro Zé. Poderia me atender agora?`);
+  const mensagem = encodeURIComponent(`Olá, encontrei sua mecânica "${nomeFantasia}" pelo aplicativo AUTOZAP. Poderia me atender agora?`);
   const url = `https://wa.me/55${numeroLimpo}?text=${mensagem}`;
 
 
@@ -219,7 +219,7 @@ export default function Details({ route }) {
             )}
           </View>
 
-          {/* Botão Socorro Ze */}
+          {/* Botão AUTOZAP */}
           <TouchableOpacity
             style={styles.helpButton}
             onPress={() => {
@@ -231,7 +231,7 @@ export default function Details({ route }) {
             }}
           >
             <Ionicons name="logo-whatsapp" size={28} color="white" />
-            <Text style={styles.helpButtonText}>Socorro Zé</Text>
+            <Text style={styles.helpButtonText}>AUTOZAP</Text>
           </TouchableOpacity>
 
           {/* Informações adicionais */}

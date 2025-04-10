@@ -6,7 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/icon_app.png",
     "userInterfaceStyle": "light",
-
+    
     
     "permissions": ["MEDIA_LIBRARY", "CAMERA"],
 
@@ -26,7 +26,7 @@
 
     
     "ios": {
-      "buildNumber": "3",
+      "buildNumber": "7",
       "supportsTablet": false,
       "infoPlist": {
         "NSCameraUsageDescription": "Este aplicativo precisa acessar a câmera para tirar fotos.",
@@ -40,7 +40,7 @@
 
     
     "android": {
-      "versionCode": 11,
+      "versionCode": 12,
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon_app.png",
         "backgroundColor": "#ffffff"

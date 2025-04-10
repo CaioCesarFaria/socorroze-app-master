@@ -99,7 +99,7 @@ export default function Login() {
                 style={styles.logoWelcome}
                 source={require("../../assets/iconlogo.png")}
               />
-              <Text style={styles.title}>Bem-vindo ao Socorro Zé</Text>
+              <Text style={styles.title}>Bem-vindo ao AUTOZAP</Text>
               <View style={styles.boxInputs}>
                 <Text style={styles.inputLabel}>E-mail</Text>
                 <TextInput

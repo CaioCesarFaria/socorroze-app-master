@@ -31,7 +31,7 @@ export default function TermosDePrivacidade() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>1. Introdução</Text>
           <Text style={styles.content}>
-            Bem-vindo ao aplicativo <Text style={styles.bold}>Socorro Zé</Text>! Nosso compromisso é 
+            Bem-vindo ao aplicativo <Text style={styles.bold}>AUTOZAP</Text>! Nosso compromisso é 
             proteger sua privacidade e garantir uma experiência segura e transparente. 
             Esta política explica como coletamos, usamos e protegemos suas informações.
           </Text>

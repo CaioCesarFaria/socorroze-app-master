@@ -27,7 +27,7 @@ export default function Welcome() {
         ></Image>
         <View style={styles.boxText}>
           <Text style={styles.titleWelcome}>
-            Olá, seja bem-vindo ao Socorro zé!
+            Olá, seja bem-vindo ao AUTOZAP!
           </Text>
           <Text style={styles.subtitleWelcome}>
             Todos os serviços mecânicos em um só lugar

@@ -96,7 +96,7 @@ export default function Home() {
 
     const numeroLimpo = numero.replace(/\D/g, ""); // Remove qualquer caractere não numérico
     const mensagem = encodeURIComponent(
-      `Olá, encontrei sua mecânica "${nomeFantasia}" pelo aplicativo Socorro Zé. Poderia me atender agora?`
+      `Olá, encontrei sua mecânica "${nomeFantasia}" pelo aplicativo AUTOZAP. Poderia me atender agora?`
     );
     const url = `https://wa.me/55${numeroLimpo}?text=${mensagem}`;
 
@@ -145,28 +145,23 @@ export default function Home() {
 
   const getLocation = async () => {
     Alert.alert(
-      "Precisamos da sua localização",
-      "Vamos usar sua localização para encontrar mecânicas próximas de você. Deseja continuar?",
+      "Aviso de Localização",
+      "Usamos sua localização para mostrar as mecânicas mais próximas de você em tempo real.",
       [
         {
-          text: "Cancelar",
-          style: "cancel",
-        },
-        {
-          text: "Permitir",
+          text: "Continuar",
           onPress: async () => {
-            const { status } =
-              await Location.requestForegroundPermissionsAsync();
+            const { status } = await Location.requestForegroundPermissionsAsync();
             if (status !== "granted") {
               setLocationError("Permissão de localização negada");
-              Alert.alert("Erro", "Permissão de localização negada.");
+              Alert.alert("Permissão negada", "Você pode ativá-la nas configurações do aparelho.");
               return;
             }
-
+  
             const location = await Location.getCurrentPositionAsync({});
             setUserLocation(location.coords);
-          },
-        },
+          }
+        }
       ]
     );
   };
@@ -384,7 +379,7 @@ export default function Home() {
             <Ionicons name="exit-outline" size={28} color="#C54343" />
             <Text style={styles.logoutButtonText}>Sair</Text>
           </TouchableOpacity>
-          <Text style={styles.textSaudacao}>{auth.currentUser ? `Olá, ${nomeUsuario}!` : 'Olá, bem-vindo ao Socorro Zé!'}</Text>
+          <Text style={styles.textSaudacao}>{auth.currentUser ? `Olá, ${nomeUsuario}!` : 'Olá, bem-vindo ao AUTOZAP!'}</Text>
         </View>
 
         <View style={styles.categoriesWrapper}>
